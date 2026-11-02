@@ -1,0 +1,1755 @@
+<!DOCTYPE html>
+<html lang="th" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Granary AI YouTube Creator - ศาลาธรรมยุ้งฉาง</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts: Prompt & Sarabun -->
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&family=Sarabun:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        granary: {
+                            gold: '#D4AF37',
+                            amber: '#F59E0B',
+                            wheat: '#F3E5AB',
+                            wheatLight: '#FFFBEB',
+                            navy: '#0F172A',
+                            navyLight: '#1E293B',
+                            deepBlue: '#1E3A8A',
+                            slate: '#334155'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Prompt', 'Sarabun', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Prompt', 'Sarabun', sans-serif;
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.05);
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: rgba(212, 175, 55, 0.5);
+            border-radius: 3px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: rgba(212, 175, 55, 0.8);
+        }
+
+        #studio-timeline .studio-clip { cursor:grab; }
+        #studio-timeline .studio-clip.dragging { opacity:.45; }
+        #studio-canvas { width:100%; height:auto; aspect-ratio:16/9; }
+
+    </style>
+</head>
+<body class="bg-gray-50 dark:bg-slate-900 text-slate-800 dark:text-slate-100 min-h-full flex flex-col transition-colors duration-200">
+
+    <!-- Top Navigation Header -->
+    <header class="bg-white dark:bg-slate-800 border-b border-amber-100 dark:border-slate-700 sticky top-0 z-40 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16 items-center">
+                <!-- Logo & Brand -->
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-amber-600 via-yellow-500 to-amber-300 flex items-center justify-center text-white shadow-md shadow-amber-500/20">
+                        <i class="fa-solid font-bold text-xl fa-wheat-awn"></i>
+                    </div>
+                    <div>
+                        <span class="text-lg font-bold bg-gradient-to-r from-amber-600 to-yellow-500 bg-clip-text text-transparent">ศาลาธรรมยุ้งฉาง</span>
+                        <span class="text-xs block text-slate-500 dark:text-slate-400 font-medium tracking-wide">Granary AI YouTube Creator</span>
+                    </div>
+                </div>
+
+                <!-- Navigation Links (Desktop) -->
+                <nav class="hidden md:flex space-x-1 lg:space-x-2">
+                    <button onclick="switchTab('create')" id="nav-create" class="nav-btn px-3 py-2 rounded-lg text-sm font-medium flex items-center space-x-2 bg-amber-50 dark:bg-slate-700 text-amber-700 dark:text-amber-400">
+                        <i class="fa-solid fa-wand-magic-sparkles"></i>
+                        <span>สร้างวิดีโอใหม่</span>
+                    </button>
+                    <button onclick="switchTab('library')" id="nav-library" class="nav-btn px-3 py-2 rounded-lg text-sm font-medium flex items-center space-x-2 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700">
+                        <i class="fa-solid fa-folder-open"></i>
+                        <span>คลังผลงาน (<span id="library-count">0</span>)</span>
+                    </button>
+                    <button onclick="switchTab('settings')" id="nav-settings" class="nav-btn px-3 py-2 rounded-lg text-sm font-medium flex items-center space-x-2 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700">
+                        <i class="fa-solid fa-sliders"></i>
+                        <span>ตั้งค่า API & YouTube</span>
+                    </button>
+                </nav>
+
+                <button onclick="switchTab('studio')" id="nav-studio" class="nav-btn px-3 py-2 rounded-lg text-sm font-medium flex items-center space-x-2 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700">
+                    <i class="fa-solid fa-film"></i><span>Video Studio</span>
+                </button>
+
+                <!-- Right Actions -->
+                <div class="flex items-center space-x-3">
+                    <!-- Dark/Light Toggle -->
+                    <button onclick="toggleDarkMode()" class="p-2 rounded-lg text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700 transition">
+                        <i id="theme-icon" class="fa-solid fa-moon text-lg"></i>
+                    </button>
+
+                    <!-- User Profile -->
+                    <div class="flex items-center space-x-2 border-l border-slate-200 dark:border-slate-700 pl-3">
+                        <div class="w-8 h-8 rounded-full bg-amber-600 text-white flex items-center justify-center font-bold text-sm shadow">
+                            ศ
+                        </div>
+                        <span class="text-xs font-semibold hidden sm:inline text-slate-700 dark:text-slate-200">ทีมสื่อศาลาธรรม</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile Nav bar -->
+        <div class="flex md:hidden border-t border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 justify-around py-2 px-1">
+            <button onclick="switchTab('create')" id="mobile-nav-create" class="flex flex-col items-center text-xs font-medium text-amber-600 dark:text-amber-400">
+                <i class="fa-solid fa-wand-magic-sparkles text-base mb-1"></i>
+                <span>สร้างใหม่</span>
+            </button>
+            <button onclick="switchTab('library')" id="mobile-nav-library" class="flex flex-col items-center text-xs font-medium text-slate-500 dark:text-slate-400">
+                <i class="fa-solid fa-folder-open text-base mb-1"></i>
+                <span>คลังผลงาน</span>
+            </button>
+            <button onclick="switchTab('settings')" id="mobile-nav-settings" class="flex flex-col items-center text-xs font-medium text-slate-500 dark:text-slate-400">
+                <i class="fa-solid fa-sliders text-base mb-1"></i>
+                <span>ตั้งค่า</span>
+            </button>
+            <button onclick="switchTab('studio')" id="mobile-nav-studio" class="flex flex-col items-center text-xs font-medium text-slate-500 dark:text-slate-400">
+                <i class="fa-solid fa-film text-base mb-1"></i><span>Studio</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Content Container -->
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
+
+        <!-- VIEW 1: CREATOR WORKFLOW -->
+        <div id="view-create" class="space-y-6">
+            
+            <!-- Progress Stepper -->
+            <div class="bg-white dark:bg-slate-800 rounded-2xl p-4 shadow-sm border border-slate-200 dark:border-slate-700 overflow-x-auto">
+                <div class="flex items-center justify-between min-w-[650px]">
+                    
+                    <button onclick="goToStep(1)" id="step-btn-1" class="step-indicator flex items-center space-x-2 text-amber-600 dark:text-amber-400 font-semibold">
+                        <span class="w-8 h-8 rounded-full bg-amber-500 text-white flex items-center justify-center text-sm font-bold shadow-md shadow-amber-500/30">1</span>
+                        <span class="text-xs sm:text-sm">หัวข้อคลิป</span>
+                    </button>
+                    <div class="h-0.5 flex-1 bg-slate-200 dark:bg-slate-700 mx-2"></div>
+
+                    <button onclick="goToStep(2)" id="step-btn-2" class="step-indicator flex items-center space-x-2 text-slate-400 font-normal">
+                        <span class="w-8 h-8 rounded-full bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-400 flex items-center justify-center text-sm font-bold">2</span>
+                        <span class="text-xs sm:text-sm">เขียนบท AI</span>
+                    </button>
+                    <div class="h-0.5 flex-1 bg-slate-200 dark:bg-slate-700 mx-2"></div>
+
+                    <button onclick="goToStep(3)" id="step-btn-3" class="step-indicator flex items-center space-x-2 text-slate-400 font-normal">
+                        <span class="w-8 h-8 rounded-full bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-400 flex items-center justify-center text-sm font-bold">3</span>
+                        <span class="text-xs sm:text-sm">เสียงพูด AI</span>
+                    </button>
+                    <div class="h-0.5 flex-1 bg-slate-200 dark:bg-slate-700 mx-2"></div>
+
+                    <button onclick="goToStep(4)" id="step-btn-4" class="step-indicator flex items-center space-x-2 text-slate-400 font-normal">
+                        <span class="w-8 h-8 rounded-full bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-400 flex items-center justify-center text-sm font-bold">4</span>
+                        <span class="text-xs sm:text-sm">สร้างสื่อ/ภาพ</span>
+                    </button>
+                    <div class="h-0.5 flex-1 bg-slate-200 dark:bg-slate-700 mx-2"></div>
+
+                    <button onclick="goToStep(5)" id="step-btn-5" class="step-indicator flex items-center space-x-2 text-slate-400 font-normal">
+                        <span class="w-8 h-8 rounded-full bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-400 flex items-center justify-center text-sm font-bold">5</span>
+                        <span class="text-xs sm:text-sm">รวมสื่อ/ตัดต่อ</span>
+                    </button>
+                    <div class="h-0.5 flex-1 bg-slate-200 dark:bg-slate-700 mx-2"></div>
+
+                    <button onclick="goToStep(6)" id="step-btn-6" class="step-indicator flex items-center space-x-2 text-slate-400 font-normal">
+                        <span class="w-8 h-8 rounded-full bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-400 flex items-center justify-center text-sm font-bold">6</span>
+                        <span class="text-xs sm:text-sm">เผยแพร่ YouTube</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- STEP 1: TOPIC INPUT & CONTENT SETTINGS -->
+            <div id="step-1" class="step-panel space-y-6">
+                <div class="bg-white dark:bg-slate-800 rounded-2xl p-6 shadow-sm border border-slate-200 dark:border-slate-700">
+                    <div class="border-b border-slate-100 dark:border-slate-700 pb-4 mb-6">
+                        <h2 class="text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                            <i class="fa-solid fa-lightbulb text-amber-500"></i>
+                            ขั้นตอนที่ 1: กำหนดหัวข้อและประเภทวิดีโอคริสเตียน
+                        </h2>
+                        <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">กรอกหัวข้อพระธรรม คำสอน หรือข้อคิดที่ต้องการสร้างวิดีโอ เพื่อให้ AI ประมวลผลบทและภาพประกอบ</p>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- Topic Input -->
+                        <div class="md:col-span-2 space-y-2">
+                            <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300">
+                                หัวข้อหลัก / พระวจนะประจำวัน <span class="text-red-500">*</span>
+                            </label>
+                            <input type="text" id="input-topic" value="พระเจ้าทรงอยู่กับเราในยามยากลำบาก" placeholder="เช่น พระเจ้าทรงอยู่กับเรา, การอธิษฐานชนะความกลัว, ความรักของพระเจ้า" 
+                                class="w-full px-4 py-3 rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:ring-2 focus:ring-amber-500 focus:border-amber-500 outline-none text-base transition">
+                            <!-- Quick Topic Suggestions -->
+                            <div class="flex flex-wrap gap-2 mt-2">
+                                <span class="text-xs text-slate-400 py-1">หัวข้อแนะนำ:</span>
+                                <button onclick="setQuickTopic('พระเจ้าทรงอยู่กับเราในทุกฤดูกาล')" class="text-xs bg-amber-50 dark:bg-slate-700 text-amber-700 dark:text-amber-300 px-3 py-1 rounded-full hover:bg-amber-100 transition">พระเจ้าทรงอยู่กับเรา</button>
+                                <button onclick="setQuickTopic('การอธิษฐานด้วยความเชื่อและการรอคอย')" class="text-xs bg-amber-50 dark:bg-slate-700 text-amber-700 dark:text-amber-300 px-3 py-1 rounded-full hover:bg-amber-100 transition">การอธิษฐานด้วยความเชื่อ</button>
+                                <button onclick="setQuickTopic('การอภัยและการคืนดีในความรักพระคริสต์')" class="text-xs bg-amber-50 dark:bg-slate-700 text-amber-700 dark:text-amber-300 px-3 py-1 rounded-full hover:bg-amber-100 transition">การอภัยและการคืนดี</button>
+                                <button onclick="setQuickTopic('พระผู้เลี้ยงที่แสนดี (สดุดี 23)')" class="text-xs bg-amber-50 dark:bg-slate-700 text-amber-700 dark:text-amber-300 px-3 py-1 rounded-full hover:bg-amber-100 transition">พระผู้เลี้ยงที่แสนดี</button>
+                            </div>
+                        </div>
+
+                        <!-- Video Type Category -->
+                        <div class="space-y-2">
+                            <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300">
+                                หมวดหมู่เนื้อหา & ความยาวคลิป (Length & Category)
+                            </label>
+                            <select id="select-category" class="w-full px-4 py-3 rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:ring-2 focus:ring-amber-500 outline-none">
+                                <option value="พระวจนะประจำวัน (1 นาที)">พระวจนะประจำวัน (Shorts / 1 นาที)</option>
+                                <option value="ข้อคิดและเฝ้าเดี่ยว (3 นาที)">ข้อคิดและเฝ้าเดี่ยว (3 นาที)</option>
+                                <option value="ความยาวปานกลาง (5-7 นาที)" selected>บทเรียนข้อคิดความยาวปานกลาง (5-7 นาที)</option>
+                                <option value="บทเทศนาฉบับเต็ม (8-10 นาที)">บทเทศนาและคำสอนฉบับเต็ม (8-10 นาที)</option>
+                                <option value="หนังสั้น AI คริสเตียน (5-10 นาที)">หนังสั้น AI ละครคริสเตียน (5-10 นาที)</option>
+                                <option value="ประกาศข่าวประเสริฐ (5-10 นาที)">วิดีโอประกาศข่าวประเสริฐ (5-10 นาที)</option>
+                            </select>
+                        </div>
+
+                        <!-- Tone & Style -->
+                        <div class="space-y-2">
+                            <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300">
+                                น้ำเสียงและอารมณ์ของวิดีโอ (Tone of Voice)
+                            </label>
+                            <select id="select-tone" class="w-full px-4 py-3 rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:ring-2 focus:ring-amber-500 outline-none">
+                                <option value="อบอุ่น หนุนใจ ให้กำลังใจ">อบอุ่น หนุนใจ ให้กำลังใจ</option>
+                                <option value="สงบ ลึกซึ้ง ศรัทธา">สงบ ลึกซึ้ง ศรัทธา</option>
+                                <option value="ตื่นเต้น มีพลัง ท้าทาย">ตื่นเต้น มีพลัง ท้าทายความเชื่อ</option>
+                                <option value="เล่าเรื่อง น่าติดตาม สอนใจ">เล่าเรื่อง น่าติดตาม สอนใจ</option>
+                            </select>
+                        </div>
+
+                        <!-- Video Format / Aspect Ratio -->
+                        <div class="space-y-2">
+                            <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300">
+                                อัตราส่วนวิดีโอ (Video Aspect Ratio)
+                            </label>
+                            <div class="grid grid-cols-2 gap-3">
+                                <label class="border rounded-xl p-3 flex items-center space-x-3 cursor-pointer hover:border-amber-500 bg-amber-50/50 dark:bg-slate-700/50 border-amber-500">
+                                    <input type="radio" name="aspect-ratio" value="16:9" checked class="text-amber-600">
+                                    <div>
+                                        <div class="font-medium text-sm">16:9 แนวนอน</div>
+                                        <div class="text-xs text-slate-400">YouTube Standard</div>
+                                    </div>
+                                </label>
+                                <label class="border rounded-xl p-3 flex items-center space-x-3 cursor-pointer hover:border-amber-500 bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-700">
+                                    <input type="radio" name="aspect-ratio" value="9:16" class="text-amber-600">
+                                    <div>
+                                        <div class="font-medium text-sm">9:16 แนวตั้ง</div>
+                                        <div class="text-xs text-slate-400">YouTube Shorts / Reels</div>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Target Audience -->
+                        <div class="space-y-2">
+                            <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300">
+                                กลุ่มเป้าหมาย (Target Audience)
+                            </label>
+                            <input type="text" id="input-audience" value="ผู้เชื่อใหม่, คริสเตียนทั่วไป, ผู้ที่กำลังแสวงหากำลังใจ" 
+                                class="w-full px-4 py-3 rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:ring-2 focus:ring-amber-500 outline-none">
+                        </div>
+                    </div>
+
+                    <!-- Next Button -->
+                    <div class="mt-8 flex justify-end">
+                        <button onclick="generateScriptWithAI()" class="px-6 py-3 rounded-xl bg-gradient-to-r from-amber-500 to-yellow-600 hover:from-amber-600 hover:to-yellow-700 text-white font-semibold shadow-md shadow-amber-500/20 flex items-center space-x-2 transition">
+                            <span>สร้างบทด้วย AI</span>
+                            <i class="fa-solid fa-arrow-right"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- STEP 2: SCRIPT & BIBLE GENERATOR -->
+            <div id="step-2" class="step-panel hidden space-y-6">
+                <div class="bg-white dark:bg-slate-800 rounded-2xl p-6 shadow-sm border border-slate-200 dark:border-slate-700">
+                    <div class="flex flex-col md:flex-row md:items-center justify-between border-b border-slate-100 dark:border-slate-700 pb-4 mb-6 gap-4">
+                        <div>
+                            <h2 class="text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                                <i class="fa-solid fa-book-bible text-amber-500"></i>
+                                ขั้นตอนที่ 2: บทวิดีโอ & ข้อพระคัมภีร์ประจำฉาก
+                            </h2>
+                            <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">AI ทำการคัดสรรข้อพระคัมภีร์ ถอดบทพูด และวางโครงเรื่องแยกตามฉาก</p>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <button onclick="generateScriptWithAI()" class="px-3 py-2 text-xs font-semibold rounded-lg bg-amber-100 dark:bg-slate-700 text-amber-700 dark:text-amber-300 hover:bg-amber-200 transition flex items-center gap-1">
+                                <i class="fa-solid fa-rotate-right"></i>
+                                <span>เขียนใหม่ด้วย AI</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Scripture Highlight Box -->
+                    <div class="bg-gradient-to-r from-amber-50 via-yellow-50 to-amber-100/50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 border border-amber-200 dark:border-slate-700 rounded-xl p-5 mb-6">
+                        <div class="flex items-start space-x-3">
+                            <i class="fa-solid fa-quote-left text-amber-500 text-2xl mt-1"></i>
+                            <div class="flex-1">
+                                <h3 class="font-bold text-amber-900 dark:text-amber-400 text-sm mb-1">ข้อพระคัมภีร์หลักประจำหัวข้อ</h3>
+                                <p id="scripture-main-text" class="italic text-slate-700 dark:text-slate-300 font-serif text-lg leading-relaxed">
+                                    "อย่ากลัวเลย เพราะเราอยู่กับเจ้า อย่าขยาด เพราะเราเป็น 하나님 ของเจ้า เราจะเสริมกำลังเจ้า เราจะช่วยเจ้า"
+                                </p>
+                                <div id="scripture-ref" class="text-right text-xs font-bold text-amber-800 dark:text-amber-400 mt-2">
+                                    — อิสยาห์ 41:10 (THSV11)
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Expand Script Duration Bar (New Feature) -->
+                    <div class="bg-amber-500/10 border border-amber-500/30 rounded-xl p-4 mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-9 h-9 rounded-lg bg-amber-500 text-white flex items-center justify-center font-bold shrink-0">
+                                <i class="fa-solid fa-clock"></i>
+                            </div>
+                            <div>
+                                <h4 class="text-xs font-bold text-amber-900 dark:text-amber-300 uppercase tracking-wider">เครื่องมือขยายความยาวบทบรรยาย (Script Duration Extender)</h4>
+                                <p class="text-xs text-slate-600 dark:text-slate-400">เพิ่มเนื้อหาเรื่องเล่า คำอธิบายศัพท์เดิม คำอธิษฐาน และการประยุกต์ใช้ในชีวิต</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-2 shrink-0">
+                            <button onclick="extendScriptDuration(5)" class="px-3 py-1.5 bg-amber-500 hover:bg-amber-600 text-white text-xs font-semibold rounded-lg shadow transition flex items-center gap-1">
+                                <i class="fa-solid fa-plus"></i> ขยายเป็น 5-7 นาที
+                            </button>
+                            <button onclick="extendScriptDuration(10)" class="px-3 py-1.5 bg-gradient-to-r from-amber-600 to-yellow-600 hover:opacity-90 text-white text-xs font-semibold rounded-lg shadow transition flex items-center gap-1">
+                                <i class="fa-solid fa-bolt"></i> ขยายเป็น 8-10 นาที
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Scenes Breakdown Table/List -->
+                    <div class="space-y-4 mb-6">
+                        <h3 class="font-bold text-slate-800 dark:text-slate-200 text-sm flex items-center justify-between">
+                            <span>โครงเรื่องฉากบทความยาว (5-10 นาที Breakdown & Timeline Prompts)</span>
+                            <button onclick="addNewScene()" class="text-xs text-amber-600 dark:text-amber-400 hover:underline flex items-center gap-1">
+                                <i class="fa-solid fa-plus"></i> เพิ่มฉากใหม่
+                            </button>
+                        </h3>
+
+                        <div id="scenes-container" class="space-y-4">
+                            <!-- Scenes will be injected dynamically -->
+                        </div>
+                    </div>
+
+                    <!-- Navigation -->
+                    <div class="flex justify-between items-center pt-4 border-t border-slate-100 dark:border-slate-700">
+                        <button onclick="goToStep(1)" class="px-5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-300 font-medium hover:bg-slate-50 dark:hover:bg-slate-700">
+                            <i class="fa-solid fa-arrow-left mr-2"></i> ย้อนกลับ
+                        </button>
+                        <button onclick="goToStep(3)" class="px-6 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-semibold shadow-md flex items-center space-x-2">
+                            <span>ต่อไป: สร้างเสียงพูด AI</span>
+                            <i class="fa-solid fa-arrow-right"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- STEP 3: AI VOICE GENERATOR (THAI) -->
+            <div id="step-3" class="step-panel hidden space-y-6">
+                <div class="bg-white dark:bg-slate-800 rounded-2xl p-6 shadow-sm border border-slate-200 dark:border-slate-700">
+                    <div class="border-b border-slate-100 dark:border-slate-700 pb-4 mb-6">
+                        <h2 class="text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                            <i class="fa-solid fa-microphone-lines text-amber-500"></i>
+                            ขั้นตอนที่ 3: เลือกและสร้างเสียงพูดบรรยายภาษาไทย (AI Voice)
+                        </h2>
+                        <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">เลือกเสียงพากย์บรรยายที่เหมาะสมกับอารมณ์ของศาลาธรรมยุ้งฉาง</p>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <!-- Voice Selector Column -->
+                        <div class="space-y-4">
+                            <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300">
+                                เลือกผู้พากย์เสียง (Voice Presenter)
+                            </label>
+
+                            <div class="rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 p-4 text-sm text-slate-600 dark:text-slate-300">
+                                <div class="font-semibold text-slate-900 dark:text-white mb-1">เลือกเสียงจาก Google Cloud โดยตรง</div>
+                                รายการเสียงจะโหลดจาก Chirp 3 HD API ของโปรเจกต์จริง ไม่ใช้ชื่อเสียงตัวอย่างที่ไม่ได้เชื่อมกับผู้ให้บริการ
+                            </div>
+
+                            <!-- Real Google Chirp 3 HD Voice Studio -->
+                            <div class="bg-amber-50 dark:bg-slate-900 p-4 rounded-xl border border-amber-200 dark:border-slate-700 space-y-3">
+                                <div class="flex items-center justify-between gap-2 flex-wrap">
+                                    <div>
+                                        <div class="font-bold text-sm text-slate-900 dark:text-white">Google Chirp 3 HD — Voice Studio</div>
+                                        <div class="text-xs text-slate-600 dark:text-slate-400">เสียงภาษาไทยสังเคราะห์คุณภาพสูง • แนวทางบทพากย์อบอุ่น • จังหวะหยุดตามบริบท</div>
+                                    </div>
+                                    <span id="chirp-status" class="text-xs rounded-full px-3 py-1 bg-slate-200 text-slate-700">ยังไม่เชื่อมต่อ</span>
+                                </div>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                    <label class="text-xs font-semibold text-slate-700 dark:text-slate-300">เสียงพากย์ภาษาไทย
+                                        <select id="chirp-voice" class="mt-1 w-full p-2 rounded-lg border border-slate-300 dark:border-slate-600 dark:bg-slate-800 text-sm">
+                                            <option value="">กำลังโหลดรายการเสียง…</option>
+                                        </select>
+                                    </label>
+                                    <label class="text-xs font-semibold text-slate-700 dark:text-slate-300">ที่อยู่ API Backend
+                                        <input id="chirp-api-base" type="url" value="http://localhost:8787" class="mt-1 w-full p-2 rounded-lg border border-slate-300 dark:border-slate-600 dark:bg-slate-800 text-sm" placeholder="https://your-backend.example.com">
+                                    </label>
+                                </div>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                    <label class="text-xs font-semibold text-slate-700 dark:text-slate-300">API Access Token (ถ้าตั้งค่าไว้ใน Backend)
+                                        <input id="chirp-api-token" type="password" autocomplete="off" class="mt-1 w-full p-2 rounded-lg border border-slate-300 dark:border-slate-600 dark:bg-slate-800 text-sm" placeholder="ใส่เฉพาะ token ของแอป ไม่ใช่ Google API Key">
+                                    </label>
+                                    <div class="text-xs text-slate-600 dark:text-slate-400 flex items-center">แนวทางบทพากย์: <b class="ml-1">อบอุ่น</b> · ความเร็ว <b class="ml-1">0.95x</b> · หยุดพักตามประโยค</div>
+                                </div>
+                                <div class="flex flex-wrap gap-2">
+                                    <button onclick="connectChirpBackend()" class="px-3 py-2 bg-slate-800 text-white text-xs rounded-lg hover:bg-slate-700"><i class="fa-solid fa-plug mr-1"></i> เชื่อมต่อ / โหลดเสียง</button>
+                                    <button onclick="generateAllAudioClips('LINEAR16')" class="px-3 py-2 bg-amber-500 text-white text-xs rounded-lg hover:bg-amber-600"><i class="fa-solid fa-file-audio mr-1"></i> สร้าง WAV ทุกฉาก</button>
+                                    <button onclick="generateAllAudioClips('MP3')" class="px-3 py-2 bg-indigo-600 text-white text-xs rounded-lg hover:bg-indigo-700"><i class="fa-solid fa-file-audio mr-1"></i> สร้าง MP3 ทุกฉาก</button>
+                                </div>
+                                <p class="text-[11px] text-slate-500 dark:text-slate-400">หมายเหตุ: Chirp 3 HD เป็นเสียง AI ไม่ใช่เสียงมนุษย์จริง และไม่มีการรับประกันการแสดงอารมณ์แบบนักพากย์ทุกประโยค</p>
+                            </div>
+
+                            <!-- Controls -->
+                            <div class="bg-slate-50 dark:bg-slate-900 p-4 rounded-xl space-y-3 border border-slate-200 dark:border-slate-700">
+                                <div>
+                                    <label class="text-xs font-semibold text-slate-600 dark:text-slate-400 flex justify-between">
+                                        <span>ความเร็วเสียง (Speed):</span>
+                                        <span id="speed-val">0.95x</span>
+                                    </label>
+                                    <input type="range" id="voice-speed" min="0.25" max="2" step="0.05" value="0.95" oninput="document.getElementById('speed-val').innerText = this.value + 'x'" class="w-full accent-amber-500 mt-1">
+                                </div>
+                                <div>
+                                    <label class="text-xs font-semibold text-slate-600 dark:text-slate-400 flex justify-between">
+                                        <span>ระดับเสียง (Pitch): ไม่รองรับใน Chirp 3 HD</span>
+                                        <span id="pitch-val">Normal</span>
+                                    </label>
+                                    <input type="range" id="voice-pitch" min="-5" max="5" value="0" disabled class="w-full accent-amber-500 mt-1">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Audio Script Preview & Generator Column -->
+                        <div class="md:col-span-2 space-y-4">
+                            <div class="bg-slate-50 dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-700">
+                                <h3 class="font-bold text-sm text-slate-800 dark:text-slate-200 mb-2 flex items-center justify-between">
+                                    <span>ข้อความบทบรรยายที่จะแปลงเป็นเสียง</span>
+                                    <button onclick="generateAllAudioClips()" class="px-3 py-1 bg-amber-500 text-white text-xs rounded-lg font-medium hover:bg-amber-600 transition flex items-center gap-1">
+                                        <i class="fa-solid fa-bolt"></i> สร้างเสียงทุกฉาก
+                                    </button>
+                                </h3>
+                                
+                                <div id="audio-scene-list" class="space-y-3 max-h-[350px] overflow-y-auto custom-scrollbar pr-1">
+                                    <!-- Dynamic list of script narration chunks -->
+                                </div>
+                            </div>
+
+                            <!-- Combined Audio Preview Bar -->
+                            <div class="bg-slate-900 text-white p-4 rounded-xl flex items-center justify-between">
+                                <div class="flex items-center space-x-3">
+                                    <button id="main-audio-play-btn" onclick="togglePlayFullAudio()" class="w-10 h-10 rounded-full bg-amber-500 text-white flex items-center justify-center hover:bg-amber-600 transition">
+                                        <i class="fa-solid fa-play"></i>
+                                    </button>
+                                    <div>
+                                        <div class="text-sm font-semibold">ทดลองฟังเสียงบรรยายฉากแรก</div>
+                                        <div class="text-xs text-slate-400" id="audio-duration-txt">ความยาวประมาณ: -- นาที</div>
+                                    </div>
+                                </div>
+                                <span class="px-3 py-1 bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 text-xs rounded-full">
+                                    <i class="fa-solid fa-circle-check mr-1"></i> เสียงพร้อมใช้งาน
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Navigation -->
+                    <div class="flex justify-between items-center pt-6 mt-6 border-t border-slate-100 dark:border-slate-700">
+                        <button onclick="goToStep(2)" class="px-5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-300 font-medium hover:bg-slate-50 dark:hover:bg-slate-700">
+                            <i class="fa-solid fa-arrow-left mr-2"></i> ย้อนกลับ
+                        </button>
+                        <button onclick="goToStep(4)" class="px-6 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-semibold shadow-md flex items-center space-x-2">
+                            <span>ต่อไป: สร้างภาพและวิดีโอ AI</span>
+                            <i class="fa-solid fa-arrow-right"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- STEP 4: AI VIDEO & IMAGE GENERATION -->
+            <div id="step-4" class="step-panel hidden space-y-6">
+                <div class="bg-white dark:bg-slate-800 rounded-2xl p-6 shadow-sm border border-slate-200 dark:border-slate-700">
+                    <div class="flex flex-col md:flex-row md:items-center justify-between border-b border-slate-100 dark:border-slate-700 pb-4 mb-6 gap-4">
+                        <div>
+                            <h2 class="text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                                <i class="fa-solid fa-clapperboard text-amber-500"></i>
+                                ขั้นตอนที่ 4: สร้างภาพและวิดีโอประกอบฉาก (AI Visual Prompts)
+                            </h2>
+                            <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">ระบบสร้าง Prompt ภาษาอังกฤษสำหรับ Gemini / Imagen / Midjourney พร้อมแสดงภาพตัวอย่าง</p>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <select id="visual-style" onchange="updateVisualPromptsStyle()" class="px-3 py-2 text-xs font-semibold rounded-lg bg-slate-100 dark:bg-slate-700 border-none outline-none">
+                                <option value="Cinematic Warm Lighting">สไตล์: Cinematic Christian Warm Art</option>
+                                <option value="Watercolor Bible Story">สไตล์: Watercolor Pastoral Art</option>
+                                <option value="Modern Dramatic Photography">สไตล์: Modern Real Photography</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Media Canvas Prompts Grid -->
+                    <div id="visual-prompts-grid" class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                        <!-- Dynamic generated visual cards per scene -->
+                    </div>
+
+                    <!-- Navigation -->
+                    <div class="flex justify-between items-center pt-6 border-t border-slate-100 dark:border-slate-700">
+                        <button onclick="goToStep(3)" class="px-5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-300 font-medium hover:bg-slate-50 dark:hover:bg-slate-700">
+                            <i class="fa-solid fa-arrow-left mr-2"></i> ย้อนกลับ
+                        </button>
+                        <button onclick="goToStep(5)" class="px-6 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-semibold shadow-md flex items-center space-x-2">
+                            <span>ต่อไป: รวมสื่อ & ตัดต่อ Timeline</span>
+                            <i class="fa-solid fa-arrow-right"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- STEP 5: VIDEO EDITOR & TIMELINE BUILDER -->
+            <div id="step-5" class="step-panel hidden space-y-6">
+                <div class="bg-white dark:bg-slate-800 rounded-2xl p-6 shadow-sm border border-slate-200 dark:border-slate-700">
+                    <div class="border-b border-slate-100 dark:border-slate-700 pb-4 mb-6">
+                        <h2 class="text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                            <i class="fa-solid fa-sliders text-amber-500"></i>
+                            ขั้นตอนที่ 5: จัดเรียง รวมสื่อ และพรีวิววิดีโอ (Video Editor Timeline)
+                        </h2>
+                        <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">รวมฉากภาพ เสียงบรรยาย ซับไตเติ้ลคำบรรยาย และเพลงนมัสการประกอบ</p>
+                    </div>
+
+                    <!-- Main Video Preview Player -->
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+                        <!-- Left Screen Player -->
+                        <div class="lg:col-span-2 space-y-3">
+                            <div class="relative aspect-video bg-black rounded-xl overflow-hidden shadow-xl border border-slate-800 flex items-center justify-center group" id="video-preview-canvas">
+                                <!-- Background Simulated Canvas Image -->
+                                <img id="timeline-canvas-img" src="https://placehold.co/1280x720/1e293b/d4af37?text=%E0%B8%A8%E0%B8%B2%E0%B8%A5%E0%B8%B2%E0%B8%98%E0%B8%A3%E0%B8%A3%E0%B8%A1%E0%B8%A2%E0%B8%B8%E0%B9%89%E0%B8%87%E0%B8%89%E0%B8%B2%E0%B8%87+Granary+AI" class="w-full h-full object-cover">
+                                
+                                <!-- Subtitle Overlay -->
+                                <div id="timeline-subtitle-overlay" class="absolute bottom-6 left-4 right-4 text-center">
+                                    <span class="bg-black/70 text-white px-4 py-2 rounded-lg text-sm md:text-base font-medium shadow border border-yellow-500/30">
+                                        "อย่ากลัวเลย เพราะเราอยู่กับเจ้า"
+                                    </span>
+                                </div>
+
+                                <!-- Play Overlay Control -->
+                                <button onclick="toggleTimelinePlay()" class="absolute w-16 h-16 rounded-full bg-amber-500/90 text-white flex items-center justify-center text-2xl shadow-lg group-hover:scale-110 transition">
+                                    <i id="timeline-play-icon" class="fa-solid fa-play ml-1"></i>
+                                </button>
+                            </div>
+
+                            <!-- Controls Bar -->
+                            <div class="bg-slate-100 dark:bg-slate-900 p-3 rounded-xl flex items-center justify-between text-xs font-semibold">
+                                <span class="text-slate-600 dark:text-slate-400">สถานะ: <span class="text-amber-500">พร้อม Render คลิป</span></span>
+                                <div class="flex items-center space-x-2">
+                                    <button onclick="renderVideoDraft()" class="px-4 py-1.5 bg-gradient-to-r from-amber-500 to-yellow-600 text-white rounded-lg hover:opacity-90 transition flex items-center gap-1">
+                                        <i class="fa-solid fa-film"></i> ประมวลผลวิดีโอ (Render Draft)
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Right Audio & Worship Music Selection -->
+                        <div class="space-y-4">
+                            <div class="bg-slate-50 dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-700">
+                                <h3 class="font-bold text-sm text-slate-800 dark:text-slate-200 mb-3 flex items-center gap-2">
+                                    <i class="fa-solid fa-music text-amber-500"></i> เพลงบรรเลงประกอบ (Worship Background)
+                                </h3>
+                                <div class="space-y-2">
+                                    <label class="border rounded-lg p-2.5 flex items-center justify-between cursor-pointer bg-amber-50/50 dark:bg-slate-800 border-amber-500">
+                                        <div class="flex items-center space-x-2">
+                                            <input type="radio" name="bg-music" checked class="text-amber-600">
+                                            <span class="text-xs font-medium">เปียโนนุ่มนวล - Peace in His Presence</span>
+                                        </div>
+                                        <i class="fa-solid fa-volume-high text-amber-500 text-xs"></i>
+                                    </label>
+                                    <label class="border rounded-lg p-2.5 flex items-center justify-between cursor-pointer bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-700">
+                                        <div class="flex items-center space-x-2">
+                                            <input type="radio" name="bg-music" class="text-amber-600">
+                                            <span class="text-xs font-medium">อะคูสติกกีตาร์ - Morning Prayer</span>
+                                        </div>
+                                        <i class="fa-solid fa-volume-low text-slate-400 text-xs"></i>
+                                    </label>
+                                    <label class="border rounded-lg p-2.5 flex items-center justify-between cursor-pointer bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-700">
+                                        <div class="flex items-center space-x-2">
+                                            <input type="radio" name="bg-music" class="text-amber-600">
+                                            <span class="text-xs font-medium">ออเคสตราศักดิ์สิทธิ์ - Faith & Hope</span>
+                                        </div>
+                                        <i class="fa-solid fa-volume-xmark text-slate-400 text-xs"></i>
+                                    </label>
+                                </div>
+                                <div class="mt-3">
+                                    <label class="text-xs font-semibold text-slate-500 flex justify-between">
+                                        <span>ความดังเพลงประกอบ (BGM Volume):</span>
+                                        <span>20%</span>
+                                    </label>
+                                    <input type="range" value="20" min="0" max="100" class="w-full accent-amber-500 mt-1">
+                                </div>
+                            </div>
+
+                            <!-- Subtitle Options -->
+                            <div class="bg-slate-50 dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-700 space-y-2">
+                                <h3 class="font-bold text-sm text-slate-800 dark:text-slate-200 mb-1">สไตล์คำบรรยาย (Caption Settings)</h3>
+                                <div class="flex gap-2">
+                                    <button class="px-3 py-1 bg-amber-500 text-white rounded text-xs">พื้นหลังดำโปร่ง</button>
+                                    <button class="px-3 py-1 bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300 rounded text-xs">ข้อความทองเงา</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Timeline Track Visualization -->
+                    <div class="bg-slate-900 text-white rounded-xl p-4 space-y-3">
+                        <div class="text-xs font-semibold text-amber-400 flex items-center justify-between">
+                            <span>TIMELINE TRACKS (ความยาวรวม 03:20 นาที)</span>
+                            <span class="text-slate-400">FPS: 30 | Resolution: 1080p</span>
+                        </div>
+                        <div class="space-y-2 text-xs">
+                            <!-- Track 1: Images -->
+                            <div class="flex items-center gap-2">
+                                <span class="w-20 font-mono text-slate-400">Video/Pic:</span>
+                                <div class="flex-1 bg-slate-800 h-8 rounded flex overflow-hidden p-0.5 gap-1">
+                                    <div class="bg-amber-600/60 rounded flex items-center justify-center font-bold truncate px-2" style="width: 30%;">ฉากที่ 1 (0:00-1:00)</div>
+                                    <div class="bg-blue-600/60 rounded flex items-center justify-center font-bold truncate px-2" style="width: 40%;">ฉากที่ 2 (1:00-2:15)</div>
+                                    <div class="bg-emerald-600/60 rounded flex items-center justify-center font-bold truncate px-2" style="width: 30%;">ฉากที่ 3 (2:15-3:20)</div>
+                                </div>
+                            </div>
+                            <!-- Track 2: Audio -->
+                            <div class="flex items-center gap-2">
+                                <span class="w-20 font-mono text-slate-400">AI Voice:</span>
+                                <div class="flex-1 bg-slate-800 h-8 rounded p-0.5">
+                                    <div class="bg-amber-500/80 h-full rounded flex items-center px-3 font-semibold text-black">
+                                        <i class="fa-solid fa-waveform mr-2"></i> เสียงพากย์ภาษาไทย อ.อาจินต์ (เรียบเสร็จสมบูรณ์)
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Navigation -->
+                    <div class="flex justify-between items-center pt-6 border-t border-slate-100 dark:border-slate-700">
+                        <button onclick="goToStep(4)" class="px-5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-300 font-medium hover:bg-slate-50 dark:hover:bg-slate-700">
+                            <i class="fa-solid fa-arrow-left mr-2"></i> ย้อนกลับ
+                        </button>
+                        <button onclick="goToStep(6)" class="px-6 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-semibold shadow-md flex items-center space-x-2">
+                            <span>ต่อไป: เตรียมเผยแพร่บน YouTube</span>
+                            <i class="fa-solid fa-arrow-right"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- STEP 6: YOUTUBE PUBLISH & THUMBNAIL -->
+            <div id="step-6" class="step-panel hidden space-y-6">
+                <div class="bg-white dark:bg-slate-800 rounded-2xl p-6 shadow-sm border border-slate-200 dark:border-slate-700">
+                    <div class="border-b border-slate-100 dark:border-slate-700 pb-4 mb-6">
+                        <h2 class="text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                            <i class="fa-brands fa-youtube text-red-600"></i>
+                            ขั้นตอนที่ 6: จัดเตรียมข้อมูล & เผยแพร่ลงช่อง YouTube ศาลาธรรมยุ้งฉาง
+                        </h2>
+                        <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">AI สร้างชื่อคลิป คำอธิบาย แฮชแท็ก และภาพปก Thumbnail สำหรับอัปโหลดผ่าน YouTube Data API</p>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                        <!-- Left Details Column -->
+                        <div class="space-y-4">
+                            <!-- Youtube Title -->
+                            <div class="space-y-1">
+                                <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider">
+                                    ชื่อคลิป YouTube (Video Title)
+                                </label>
+                                <input type="text" id="yt-title" value="พระเจ้าทรงอยู่กับเราในยามยากลำบาก | ข้อคิดเฝ้าเดี่ยว ศาลาธรรมยุ้งฉาง" 
+                                    class="w-full px-4 py-2.5 rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 font-semibold text-slate-900 dark:text-white focus:ring-2 focus:ring-amber-500">
+                            </div>
+
+                            <!-- Description -->
+                            <div class="space-y-1">
+                                <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider">
+                                    คำอธิบายใต้คลิป (Description & Timestamps)
+                                </label>
+                                <textarea id="yt-desc" rows="6" class="w-full px-4 py-2.5 rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-sm text-slate-900 dark:text-white focus:ring-2 focus:ring-amber-500 custom-scrollbar">
+พระวจนะประจำวันและข้อคิดหนุนใจจากศาลาธรรมยุ้งฉาง (Granary Christian Fellowship)
+
+ข้อพระคัมภีร์อ้างอิง:
+อิสยาห์ 41:10 "อย่ากลัวเลย เพราะเราอยู่กับเจ้า..."
+
+⏱️ Timestamps:
+0:00 - บทนำ: ความกลัวและมรสุมชีวิต
+1:00 - พระวจนะหนุนใจ อิสยาห์ 41:10
+2:15 - คำอธิษฐานตราบใดที่พระเจ้าทรงสถิตอยู่ด้วย
+
+#ศาลาธรรมยุ้งฉาง #คริสเตียน #เฝ้าเดี่ยว #พระเจ้าทรงอยู่กับเรา #ฟังธรรมคริสเตียน #ข้อคิดคริสเตียน</textarea>
+                            </div>
+
+                            <!-- Tags -->
+                            <div class="space-y-1">
+                                <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider">
+                                    แท็ก (Tags)
+                                </label>
+                                <input type="text" id="yt-tags" value="ศาลาธรรมยุ้งฉาง, คริสเตียน, พระวจนะประจำวัน, ข้อคิดคริสเตียน, การอธิษฐาน, คำเทศนา" 
+                                    class="w-full px-4 py-2 rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-xs text-slate-700 dark:text-slate-300">
+                            </div>
+
+                            <!-- Privacy Mode -->
+                            <div class="space-y-1">
+                                <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider">
+                                    สถานะการเผยแพร่ (Privacy)
+                                </label>
+                                <select id="yt-privacy" class="w-full px-4 py-2.5 rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-sm font-medium">
+                                    <option value="private">ส่วนตัว (Private) - สำหรับตรวจสอบก่อน</option>
+                                    <option value="unlisted">ไม่ระบุรายการ (Unlisted)</option>
+                                    <option value="public" selected>สาธารณะ (Public) - เผยแพร่ทันที</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Right Thumbnail & Upload Preview -->
+                        <div class="space-y-4">
+                            <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider">
+                                พรีวิวภาพปกคลิป (AI Thumbnail Generator)
+                            </label>
+                            
+                            <!-- Thumbnail Canvas Container -->
+                            <div class="relative aspect-video rounded-xl overflow-hidden shadow-md border-2 border-amber-500 group">
+                                <img id="yt-thumb-img" src="https://placehold.co/1280x720/0f172a/d4af37?text=%E0%B8%9E%E0%B8%A3%E0%B8%B0%E0%B9%85%E0%B8%88%E0%B9%89%E0%B8%B2%E0%B8%97%E0%B8%A3%E0%B8%87%E0%B8%AD%E0%B8%A2%E0%B8%B9%E0%B9%88%E0%B8%81%E0%B8%B1%E0%B8%9B%E0%B9%80%E0%B8%A3%E0%B8%B2+%7C+%E0%B8%A8%E0%B8%B2%E0%B8%A5%E0%B8%B2%E0%B8%98%E0%B8%A3%E0%B8%A3%E0%B8%A1%E0%B8%A2%E0%B8%B8%E0%B9%89%E0%B8%87%E0%B8%89%E0%B8%B2%E0%B8%87" class="w-full h-full object-cover">
+                                <div class="absolute top-3 left-3 bg-red-600 text-white text-[10px] font-bold px-2 py-0.5 rounded shadow">
+                                    <i class="fa-brands fa-youtube mr-1"></i> YOUTUBE PREVIEW
+                                </div>
+                                <button onclick="regenerateThumbnail()" class="absolute bottom-3 right-3 bg-black/70 hover:bg-black text-white text-xs px-3 py-1.5 rounded-lg border border-white/20 transition flex items-center gap-1">
+                                    <i class="fa-solid fa-wand-magic-sparkles text-amber-400"></i> สุ่มปกใหม่
+                                </button>
+                            </div>
+
+                            <!-- Channel Auth Status -->
+                            <div class="bg-amber-50 dark:bg-slate-700/50 p-4 rounded-xl border border-amber-200 dark:border-slate-600 flex items-center justify-between">
+                                <div class="flex items-center space-x-3">
+                                    <div class="w-10 h-10 rounded-full bg-red-600 text-white flex items-center justify-center font-bold text-lg">
+                                        <i class="fa-brands fa-youtube"></i>
+                                    </div>
+                                    <div>
+                                        <div class="text-sm font-bold text-slate-800 dark:text-slate-100">ช่อง: ศาลาธรรมยุ้งฉาง Official</div>
+                                        <div class="text-xs text-emerald-600 dark:text-emerald-400 flex items-center">
+                                            <i class="fa-solid fa-circle-check mr-1"></i> เชื่อมต่อผ่าน OAuth API เรียบร้อย
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Save Draft to Local Library -->
+                            <button onclick="saveProjectToLibrary()" class="w-full py-2.5 rounded-xl border border-amber-500 text-amber-700 dark:text-amber-400 hover:bg-amber-50 dark:hover:bg-slate-700 font-semibold text-sm transition flex items-center justify-center gap-2">
+                                <i class="fa-solid fa-bookmark"></i>
+                                <span>บันทึกโครงการนี้ไว้ในคลังผลงาน</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Final Action Buttons -->
+                    <div class="flex flex-col sm:flex-row justify-between items-center gap-4 pt-6 border-t border-slate-100 dark:border-slate-700">
+                        <button onclick="goToStep(5)" class="w-full sm:w-auto px-5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-300 font-medium hover:bg-slate-50 dark:hover:bg-slate-700">
+                            <i class="fa-solid fa-arrow-left mr-2"></i> ย้อนกลับไปแก้ไข
+                        </button>
+
+                        <div class="flex items-center gap-3 w-full sm:w-auto">
+                            <button onclick="downloadVideoMP4()" class="flex-1 sm:flex-none px-5 py-3 rounded-xl border border-slate-300 dark:border-slate-600 text-slate-800 dark:text-slate-200 font-semibold hover:bg-slate-100 dark:hover:bg-slate-700 transition flex items-center justify-center gap-2">
+                                <i class="fa-solid fa-download"></i>
+                                <span>ดาวน์โหลด MP4</span>
+                            </button>
+                            
+                            <button onclick="publishToYouTube()" class="flex-1 sm:flex-none px-6 py-3 rounded-xl bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white font-bold shadow-lg shadow-red-600/30 transition flex items-center justify-center gap-2">
+                                <i class="fa-brands fa-youtube text-lg"></i>
+                                <span>อัปโหลดลง YouTube ทันที</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- VIEW 2: SAVED LIBRARY PAGE -->
+        <div id="view-library" class="hidden space-y-6">
+            <div class="bg-white dark:bg-slate-800 rounded-2xl p-6 shadow-sm border border-slate-200 dark:border-slate-700">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center border-b border-slate-100 dark:border-slate-700 pb-4 mb-6 gap-4">
+                    <div>
+                        <h2 class="text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                            <i class="fa-solid fa-folder-open text-amber-500"></i>
+                            คลังผลงานศาลาธรรม (Granary Video Library)
+                        </h2>
+                        <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">รวบรวมคลิปวิดีโอ บทเฝ้าเดี่ยว และข้อพระคัมภีร์ที่สร้างแล้ว</p>
+                    </div>
+
+                    <div class="flex items-center gap-2 w-full sm:w-auto">
+                        <input type="text" id="library-search" onkeyup="filterLibrary()" placeholder="ค้นหาหัวข้อหรือบท..." class="px-3 py-2 text-xs rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 w-full sm:w-48">
+                        <button onclick="switchTab('create')" class="px-4 py-2 bg-amber-500 text-white rounded-lg text-xs font-semibold hover:bg-amber-600 transition flex items-center gap-1 shrink-0">
+                            <i class="fa-solid fa-plus"></i> สร้างคลิปใหม่
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Saved Items Grid -->
+                <div id="library-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <!-- Library Items injected here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- VIEW 3: SETTINGS & API CONFIG -->
+        <div id="view-settings" class="hidden space-y-6">
+            <div class="bg-white dark:bg-slate-800 rounded-2xl p-6 shadow-sm border border-slate-200 dark:border-slate-700 max-w-3xl mx-auto">
+                <div class="border-b border-slate-100 dark:border-slate-700 pb-4 mb-6">
+                    <h2 class="text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                        <i class="fa-solid fa-sliders text-amber-500"></i>
+                        ตั้งค่า AI & Google Cloud YouTube Integration
+                    </h2>
+                    <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">จัดการกุญแจเชื่อมต่อ (API Keys) และสิทธิ์ OAuth สำหรับช่องศาลาธรรมยุ้งฉาง</p>
+                </div>
+
+                <div class="space-y-6">
+                    <!-- Gemini API Settings -->
+                    <div class="bg-slate-50 dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-700 space-y-3">
+                        <h3 class="font-bold text-sm text-slate-800 dark:text-slate-200 flex items-center gap-2">
+                            <i class="fa-solid fa-brain text-amber-500"></i> Gemini API Key (สำหรับเขียนบทและ Prompt)
+                        </h3>
+                        <p class="text-xs text-slate-500">ระบบใช้โมเดล `gemini-3-flash-preview` ในการเขียนบทพระคัมภีร์ภาษาไทย</p>
+                        <input type="password" id="gemini-api-key" placeholder="AIzaSy... (ปล่อยว่างไว้หากใช้ระบบ Auto Key)" value="" class="w-full px-4 py-2 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-xs">
+                    </div>
+
+                    <!-- YouTube OAuth & Channel Config -->
+                    <div class="bg-slate-50 dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-700 space-y-3">
+                        <h3 class="font-bold text-sm text-slate-800 dark:text-slate-200 flex items-center gap-2">
+                            <i class="fa-brands fa-youtube text-red-600"></i> YouTube Data API v3 Config
+                        </h3>
+                        <div class="space-y-2 text-xs">
+                            <div>
+                                <label class="font-semibold text-slate-600 dark:text-slate-400">Google Cloud Client ID:</label>
+                                <input type="text" value="granary-church-yt-auth.apps.googleusercontent.com" class="w-full px-3 py-1.5 rounded border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 mt-1">
+                            </div>
+                            <div>
+                                <label class="font-semibold text-slate-600 dark:text-slate-400">ชื่อช่อง YouTube ที่ยืนยันตัวตน:</label>
+                                <input type="text" value="ศาลาธรรมยุ้งฉาง (Granary Fellowship Channel)" class="w-full px-3 py-1.5 rounded border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 mt-1">
+                            </div>
+                        </div>
+                        <div class="pt-2">
+                            <button onclick="simulateOAuthConnect()" class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg text-xs font-semibold transition flex items-center gap-1">
+                                <i class="fa-brands fa-google"></i> ทดสอบเชื่อมต่อ OAuth อีกครั้ง
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="flex justify-end">
+                        <button onclick="saveSettingsAlert()" class="px-6 py-2.5 bg-amber-500 hover:bg-amber-600 text-white font-semibold rounded-xl text-sm transition">
+                            บันทึกการตั้งค่า
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- VIEW 4: GRANARY VIDEO STUDIO -->
+        <section id="view-studio" class="hidden space-y-5">
+          <div class="flex flex-wrap items-center justify-between gap-3">
+            <div><h1 class="text-2xl font-bold text-slate-800 dark:text-white"><i class="fa-solid fa-film text-amber-500 mr-2"></i>Granary AI Video Studio</h1><p class="text-sm text-slate-500 dark:text-slate-400">ตัดต่อภาพ เสียง และสร้าง MP4 ภายในเบราว์เซอร์</p></div>
+            <div class="flex flex-wrap gap-2"><button onclick="studioSaveProject()" class="px-3 py-2 rounded-lg bg-slate-700 text-white text-sm"><i class="fa-solid fa-floppy-disk mr-1"></i>บันทึกโปรเจกต์</button><button onclick="studioLoadProject()" class="px-3 py-2 rounded-lg border border-slate-300 dark:border-slate-600 text-sm"><i class="fa-solid fa-folder-open mr-1"></i>เปิดโปรเจกต์</button><button onclick="studioExport()" id="studio-export-btn" class="px-4 py-2 rounded-lg bg-amber-500 hover:bg-amber-600 text-white font-semibold text-sm"><i class="fa-solid fa-file-export mr-1"></i>ส่งออก MP4</button></div>
+          </div>
+          <div class="grid grid-cols-1 xl:grid-cols-12 gap-4">
+            <aside class="xl:col-span-3 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-4 space-y-3">
+              <h2 class="font-bold">คลังสื่อ</h2>
+              <label class="block border-2 border-dashed border-amber-300 rounded-xl p-5 text-center cursor-pointer hover:bg-amber-50 dark:hover:bg-slate-700"><i class="fa-solid fa-cloud-arrow-up text-2xl text-amber-500"></i><span class="block text-sm font-semibold mt-2">นำเข้าภาพและเสียง</span><span class="block text-xs text-slate-500">JPG, PNG, WEBP, MP3, WAV, M4A</span><input id="studio-files" type="file" accept="image/*,audio/*" multiple class="hidden" onchange="studioImportFiles(event)"></label>
+              <div id="studio-media-list" class="space-y-2 max-h-80 overflow-y-auto custom-scrollbar"><p class="text-xs text-slate-500">ยังไม่มีไฟล์ นำเข้าภาพและเสียงเพื่อเริ่มตัดต่อ</p></div>
+              <div class="border-t border-slate-200 dark:border-slate-700 pt-3 space-y-2"><label class="text-xs font-semibold">อัตราส่วนวิดีโอ</label><select id="studio-ratio" class="w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-transparent p-2 text-sm"><option value="16:9">16:9 — YouTube</option><option value="9:16">9:16 — Shorts / Reels</option><option value="1:1">1:1 — Square</option></select><label class="text-xs font-semibold block">ความละเอียด</label><select id="studio-resolution" class="w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-transparent p-2 text-sm"><option value="720">720p</option><option value="1080">1080p</option></select></div>
+            </aside>
+            <div class="xl:col-span-6 space-y-4">
+              <div class="bg-slate-950 rounded-xl overflow-hidden p-3">
+                <div class="flex justify-between items-center text-white text-xs mb-2"><span>ตัวอย่างวิดีโอ</span><span id="studio-preview-time">00:00 / 00:00</span></div>
+                <div class="bg-black rounded-lg flex items-center justify-center min-h-56"><canvas id="studio-canvas" width="1280" height="720" class="max-w-full max-h-[440px] object-contain"></canvas></div>
+                <div class="flex items-center justify-center gap-3 mt-3"><button onclick="studioPlay()" class="text-white px-3 py-1 rounded bg-slate-700"><i class="fa-solid fa-play mr-1"></i>เล่น</button><button onclick="studioPause()" class="text-white px-3 py-1 rounded bg-slate-700"><i class="fa-solid fa-pause mr-1"></i>หยุด</button><button onclick="studioRestart()" class="text-white px-3 py-1 rounded bg-slate-700"><i class="fa-solid fa-rotate-left mr-1"></i>เริ่มใหม่</button></div>
+              </div>
+              <div class="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-4 space-y-3">
+                <div class="flex items-center justify-between"><h2 class="font-bold">Timeline</h2><span id="studio-duration-label" class="text-xs text-slate-500">ความยาว 00:00</span></div>
+                <div class="flex flex-wrap gap-2 text-xs"><button onclick="studioAddSelected('video')" class="px-3 py-2 rounded bg-amber-100 text-amber-900">+ เพิ่มภาพลง Video Track</button><button onclick="studioAddSelected('voice')" class="px-3 py-2 rounded bg-blue-100 text-blue-900">+ เพิ่มเสียงพากย์</button><button onclick="studioAddSelected('music')" class="px-3 py-2 rounded bg-green-100 text-green-900">+ เพิ่มเพลงพื้นหลัง</button></div>
+                <div class="text-xs text-slate-500">ลากรายการเพื่อจัดลำดับฉาก หรือใช้ปุ่ม ↑ ↓ เพื่อเลื่อนตำแหน่ง ปรับเวลาแต่ละฉากได้</div>
+                <div id="studio-timeline" class="space-y-2"><p class="text-sm text-slate-500 py-4 text-center">นำเข้าภาพ แล้วเพิ่มภาพลง Timeline</p></div>
+              </div>
+            </div>
+            <aside class="xl:col-span-3 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-4 space-y-3">
+              <h2 class="font-bold">คุณสมบัติคลิป</h2><div id="studio-inspector" class="text-sm text-slate-500">เลือกคลิปใน Timeline เพื่อแก้ไข</div>
+              <div class="border-t border-slate-200 dark:border-slate-700 pt-3 space-y-2"><h3 class="font-semibold text-sm">สถานะการเรนเดอร์</h3><div class="w-full h-2 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden"><div id="studio-progress" class="h-full bg-amber-500" style="width:0%"></div></div><p id="studio-status" class="text-xs text-slate-500">พร้อมทำงาน — ไฟล์จะถูกประมวลผลในเบราว์เซอร์</p><p class="text-xs text-amber-700 dark:text-amber-300">หมายเหตุ: การเรนเดอร์ 1080p และคลิปยาวอาจใช้ RAM สูง แนะนำเริ่มทดสอบที่ 720p</p></div>
+            </aside>
+          </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white dark:bg-slate-800 border-t border-slate-200 dark:border-slate-700 py-4 mt-auto">
+        <div class="max-w-7xl mx-auto px-4 text-center text-xs text-slate-500 dark:text-slate-400">
+            © 2026 ศาลาธรรมยุ้งฉาง (Granary Christian Fellowship) • AI YouTube Content Creation Platform
+        </div>
+    </footer>
+
+    <!-- Modal Notification Alert Box -->
+    <div id="modal-alert" class="fixed inset-0 bg-black/50 hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-slate-800 rounded-2xl max-w-sm w-full p-6 text-center space-y-4 shadow-2xl border border-slate-200 dark:border-slate-700">
+            <div id="modal-icon-box" class="w-12 h-12 rounded-full bg-amber-100 text-amber-600 mx-auto flex items-center justify-center text-2xl">
+                <i class="fa-solid fa-check"></i>
+            </div>
+            <h3 id="modal-title" class="font-bold text-lg text-slate-900 dark:text-white">แจ้งเตือน</h3>
+            <p id="modal-message" class="text-sm text-slate-600 dark:text-slate-300">ข้อความรายละเอียดระบบ</p>
+            <button onclick="closeModalAlert()" class="w-full py-2.5 bg-amber-500 text-white font-semibold rounded-xl hover:bg-amber-600 transition text-sm">
+                ตกลง
+            </button>
+        </div>
+    </div>
+
+    <!-- JAVASCRIPT LOGIC -->
+    <script>
+        // Global Project State
+        let currentStep = 1;
+        let activeVoice = 'kore';
+        let currentProjectData = {
+            id: 'proj_' + Date.now(),
+            topic: '',
+            category: '',
+            tone: '',
+            scripture: {
+                text: '',
+                ref: ''
+            },
+            scenes: [],
+            voice: 'kore',
+            visualStyle: 'Cinematic Warm Lighting',
+            createdDate: new Date().toLocaleDateString('th-TH')
+        };
+
+        // Saved Library Array
+        let savedLibrary = [
+            {
+                id: 'lib_1',
+                topic: 'ความรักของพระเจ้าที่ไม่เคยล้มเหลว',
+                category: 'บทเทศนาฉบับเต็ม (8-10 นาที)',
+                date: '28 ต.ค. 2026',
+                status: 'อัปโหลดลง YouTube แล้ว',
+                thumb: 'https://placehold.co/600x337/0f172a/d4af37?text=%E0%B8%84%E0%B8%A7%E0%B8%B2%E0%B8%A1%E0%B8%A3%E0%B8%B1%E0%B8%81%E0%B8%9E%E0%B8%A3%E0%B8%B0%E0%B9%85%E0%B8%88%E0%B9%89',
+                scripture: '1 โครินธ์ 13:4-7'
+            },
+            {
+                id: 'lib_2',
+                topic: 'การอธิษฐานชนะมรสุมชีวิต',
+                category: 'ความยาวปานกลาง (5-7 นาที)',
+                date: '25 ต.ค. 2026',
+                status: 'ร่างวิดีโอ (Draft)',
+                thumb: 'https://placehold.co/600x337/1e293b/f59e0b?text=%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B8%AD%E0%B8%9B%E0%B8%B4%E0%B8%A9%E0%B8%90%E0%B8%B2%E0%B8%99',
+                scripture: 'ฟีลิปปี 4:6-7'
+            }
+        ];
+
+        // Detailed 5-10 Minute Long Form Sermon Templates
+        const sampleScenesData = {
+            "พระเจ้าทรงอยู่กับเราในยามยากลำบาก": {
+                scriptureText: `"อย่ากลัวเลย เพราะเราอยู่กับเจ้า อย่าขยาด เพราะเราเป็น 하나님 ของเจ้า เราจะเสริมกำลังเจ้า เราจะช่วยเจ้า"`,
+                scriptureRef: "อิสยาห์ 41:10 (THSV11)",
+                scenes: [
+                    {
+                        sceneNum: 1,
+                        timecode: "0:00 - 1:30",
+                        narration: "สวัสดีครับพี่น้องและมิตรผู้ฟังทุกท่าน ยินดีต้อนรับสู่ศาลาธรรมยุ้งฉาง ในช่วงเวลาที่มืดมนที่สุดของชีวิต มนุษย์ทุกคนมักจะเกิดคำถามในหัวใจว่า 'พระเจ้าอยู่ที่ไหน?' ในยามที่การพึ่งพากำลังของตนเองสิ้นสุดลง ความกลัวและความวุ่นวายอาจทำให้หัวใจของเราสั่นคลอน ก่อนที่เราจะเข้าสู่บทเรียนพระวจนะวันนี้ ขอให้เราก้มศีรษะลงร่วมใจกันอธิษฐาน ขอพระวิญญาณบริสุทธิ์ทรงนำหัวใจและความคิดของเราให้ได้รับสันติสุขและความเข้าใจในพระคำของพระองค์ อธิษฐานในพระนามพระเยซูคริสต์เจ้า อาเมน",
+                        prompt: "A lonely figure standing on a quiet hill during storm sunset, warm divine light breaking through dramatic dark clouds, cinematic christian Bible scenery --ar 16:9"
+                    },
+                    {
+                        sceneNum: 2,
+                        timecode: "1:30 - 3:30",
+                        narration: "ในหนังสืออิสยาห์ บทที่ 41 ข้อที่ 10 พระวจนะของพระเจ้าได้บันทึกถ้อยคำอันทรงคุณค่าไว้อย่างชัดเจนว่า 'อย่ากลัวเลย เพราะเราอยู่กับเจ้า อย่าขยาด เพราะเราเป็น 하나님 ของเจ้า เราจะเสริมกำลังเจ้า เราจะช่วยเจ้า เราจะชูเจ้าไว้ด้วยมือขวาอันมีชัยของเรา' บริบทของข้อนี้เขียนขึ้นในช่วงเวลาที่ชนชาติอิสราเอลต้องเผชิญกับความตกต่ำและการเป็นเชลย ความกลัวเรื่องอนาคตทำให้พวกเขาหมดหวัง แต่พระเจ้าทรงส่งผู้เผยพระวจนะมาตอกย้ำว่า พระองค์ไม่ได้เป็นเพียงพระเจ้าที่มองดูอยู่ห่างๆ แต่ทรงเป็นพระเจ้าผู้ทรงสถิตอยู่เคียงข้างในทุกมรสุม",
+                        prompt: "Open Holy Bible lying on an antique wooden table in a warm barn granary, soft golden morning light rays illuminating the pages, peaceful atmosphere --ar 16:9"
+                    },
+                    {
+                        sceneNum: 3,
+                        timecode: "3:30 - 6:00",
+                        narration: "ประเด็นหลักประการที่หนึ่ง: 'พระเจ้าไม่ได้สัญญาว่าชีวิตจะไร้ซึ่งมรสุม แต่ทรงสัญญาว่าจะเดินเคียงข้างเราเสมอ' เปรียบเหมือนเรื่องเล่าของรอยเท้าบนหาดทราย เมื่อชายคนหนึ่งมองย้อนกลับไปในชีวิตช่วงที่ยากลำบากที่สุด เขาเห็นรอยเท้าเพียงคู่เดียวและคิดว่าพระเจ้าทรงทอดทิ้งเขา แต่พระเยซูทรงตอบเขาว่า 'ช่วงเวลานั้นที่เราเห็นรอยเท้าคู่เดียวนั้น คือช่วงที่เรากำลังอุ้มเจ้าอยู่' ความจริงภาษาเดิมคำว่า 'เสริมกำลัง' ในภาษาฮีบรู (อาเมตซ์) หมายถึงการเติมพละกำลังภายในจิตวิญญาณให้แข็งแกร่งเกินกว่าขีดจำกัดตามธรรมชาติของมนุษย์",
+                        prompt: "Footprints on a golden beach at sunset with calm waves, sunlight creating a warm glowing path ahead, artistic high resolution --ar 16:9"
+                    },
+                    {
+                        sceneNum: 4,
+                        timecode: "6:00 - 8:30",
+                        narration: "ประเด็นหลักประการที่สอง: 'การประยุกต์ใช้ในชีวิตประจำวัน — เปลี่ยนความกลัวให้เป็นการอธิษฐานด้วยความเชื่อ' เมื่อเราเผชิญปัญหาเรื่องภาระการเงิน ความขัดแย้งในครอบครัว หรือปัญหาสุขภาพ สิ่งแรกที่เราต้องทำไม่ใช่การตีอกชกหัวหรือสิ้นหวัง แต่คือการเข้ามาคุกเข่าต่อหน้าพระบัลลังก์แห่งพระคุณ มอบความวิตกกังวลทุกอย่างไว้กับพระองค์ เพราะพระองค์ทรงห่วงใยท่าน จงยึดสัญญาในมือขวาอันทรงฤทธิ์ของพระองค์ แล้วก้าวเดินต่อไปด้วยความเชื่อในทุกๆ วัน",
+                        prompt: "Christian believer praying with peaceful faithful face, golden light surrounding, comforting presence of God in modern home setting --ar 16:9"
+                    },
+                    {
+                        sceneNum: 5,
+                        timecode: "8:30 - 10:00",
+                        narration: "สรุปบทเรียนและคำอวยพรปิด: สรุปแล้วในวันนี้ พระสัญญาของพระเจ้ายังคงเป็นจริงเสมือนแผ่นดินกว้างใหญ่ที่ไม่เคยสั่นคลอน ไม่ว่าวันนี้ท่านกำลังเดินผ่านหุบเขาเงามืดใดก็ตาม ขอให้จำไว้ว่าท่านไม่ได้เดินเพียงลำพัง พระเจ้าทรงอยู่กับท่าน ทรงเสริมกำลัง และทรงช่วยท่านเสมอ ขอพระเจ้าทรงอวยพรและปกป้องรักษาท่านและครอบครัว ทรงส่องพระพักตร์ของพระองค์มายังท่าน และประทานสันติสุขแก่ท่านตลอดสัปดาห์นี้ครับ ขอพระเจ้าทรงได้รับเกียรติสูงสุด อาเมน",
+                        prompt: "Golden cross shining warmly over wheat fields at sunrise, granary barn in background under clear blue sky, spiritual hope and peace --ar 16:9"
+                    }
+                ]
+            }
+        };
+
+        // STEP 2: Generate Script Logic supporting 5-10 minute longform scripts
+        async function generateScriptWithAI() {
+            const topic = document.getElementById('input-topic').value.trim() || 'พระเจ้าทรงอยู่กับเรา';
+            const category = document.getElementById('select-category').value;
+            const tone = document.getElementById('select-tone').value;
+
+            const isLongForm = category.includes('5-7') || category.includes('8-10') || category.includes('5-10');
+            const targetMin = category.includes('8-10') ? 10 : (category.includes('5-7') ? 7 : 3);
+
+            showModalAlert("กำลังประมวลผลบทความยาว", `AI กำลังเรียบเรียงโครงสร้างบทความยาว ${targetMin} นาที พร้อมข้อพระคัมภีร์เรื่องเล่าประกอบ และคำอธิบายลึกซึ้ง...`);
+
+            // Check template fallback or generate longform script structure
+            let data = sampleScenesData[topic];
+
+            if (!data || !isLongForm) {
+                // Dynamically build 5-10 minute structured long-form script
+                data = {
+                    scriptureText: `"เพราะเราประสงค์ความรักมั่นคง ไม่ใช่การถวายสัตวบูชา และประสงค์ความรู้ใน 하나님 มากกว่าเครื่องเผาบูชา"`,
+                    scriptureRef: `โฮเชยา 6:6 (THSV11)`,
+                    scenes: [
+                        {
+                            sceneNum: 1,
+                            timecode: "0:00 - 1:30",
+                            narration: `ยินดีต้อนรับสู่รายการพระวจนะและบทเฝ้าเดี่ยว ศาลาธรรมยุ้งฉาง หัวข้อการเทศนาเรียนรู้ร่วมกันในวันนี้คือ "${topic}" ท่ามกลางสังคมที่เร่งรีบ ให้เราพักใจและอธิษฐานต้อนรับการทรงสถิตของพระวิญญาณบริสุทธิ์ร่วมกัน...`,
+                            prompt: `Serene wooden granary barn surrounded by golden wheat fields at dawn, spiritual Christian atmosphere, 8k resolution --ar 16:9`
+                        },
+                        {
+                            sceneNum: 2,
+                            timecode: "1:30 - 3:30",
+                            narration: `ให้เราอ่านพระวจนะร่วมกันจากโฮเชยา 6:6 บริบทในข้อนี้สอนให้เราเข้าใจถึงหัวใจที่แท้จริงของการเป็นผู้ติดตามพระเจ้า ไม่ใช่เพียงพิธีกรรมภายนอก แต่คือความสัมพันธ์อันลึกซึ้งและหัวใจที่ยึดมั่นในความรัก...`,
+                            prompt: `Warm sunlight beaming through ancient church windows onto a wooden open cross, peaceful divine atmosphere --ar 16:9`
+                        },
+                        {
+                            sceneNum: 3,
+                            timecode: "3:30 - 6:00",
+                            narration: `ประเด็นหลักที่ 1: การหยั่งรากลึกในความรักของพระคริสต์ เปรียบเสมือนต้นไม้ที่ปลูกไว้ริมธารน้ำ เมื่อเผชิญมรสุมหรือความแห้งแล้ง รากที่ลึกจะดึงเอาน้ำแห่งชีวิตมาค้ำจุน ไม่ว่าวิกฤตใดเรื่อง ${topic} จะเป็นความมั่นคงให้เราเสมอ...`,
+                            prompt: `A giant green tree with deep roots by a flowing peaceful river, golden sunlight, high detail --ar 16:9`
+                        },
+                        {
+                            sceneNum: 4,
+                            timecode: "6:00 - 8:30",
+                            narration: `ประเด็นหลักที่ 2: การนำไปปฏิบัติในชีวิตประจำวัน เราสามารถสำแดง ${topic} ผ่านการยอมรับ การอภัย และการลงมือช่วยเหลือผู้อื่นในชุมชนและครอบครัวของเราในสัปดาห์นี้...`,
+                            prompt: `Hands extending help to another person, warm compassionate lighting, Christian love in action --ar 16:9`
+                        },
+                        {
+                            sceneNum: 5,
+                            timecode: "8:30 - 10:00",
+                            narration: `สรุปคำสอนและคำอธิษฐานอวยพร: ขอพระเจ้าทรงเติมเต็มความเชื่อ ให้บทเรียนหัวข้อ "${topic}" นี้ตราตรึงในจิตวิญญาณของท่าน ขอพระพรของพระบิดา สันติสุขของพระเยซูคริสต์ สถิตกับท่านเสมอ อาเมน`,
+                            prompt: `Sunset sky over calm mountains with golden cross outline, holy peaceful atmosphere --ar 16:9`
+                        }
+                    ]
+                };
+            }
+
+            // Save to current state
+            currentProjectData.topic = topic;
+            currentProjectData.category = category;
+            currentProjectData.tone = tone;
+            currentProjectData.scripture.text = data.scriptureText;
+            currentProjectData.scripture.ref = data.scriptureRef;
+            currentProjectData.scenes = data.scenes;
+
+            // Render to Step 2 UI
+            document.getElementById('scripture-main-text').innerText = data.scriptureText;
+            document.getElementById('scripture-ref').innerText = `— ${data.scriptureRef}`;
+            
+            renderScenesList(data.scenes);
+            renderAudioList(data.scenes);
+            renderVisualPrompts(data.scenes);
+
+            setTimeout(() => {
+                closeModalAlert();
+                goToStep(2);
+            }, 800);
+        }
+
+        // Extender Helper Function (+5 / +10 mins)
+        function extendScriptDuration(targetMins) {
+            showModalAlert("ขยายความยาวบทบรรยาย", `กำลังขยายบทบรรยายฉากต่างๆ เพิ่มเติมเรื่องเล่า และข้อคิดเปรียบเทียบให้ได้ความยาว ${targetMins} นาที...`);
+            
+            if (currentProjectData.scenes.length < 5) {
+                // Expand current scenes text
+                currentProjectData.scenes.forEach((sc, i) => {
+                    sc.narration += ` (อธิบายเพิ่มเติม: ในรายละเอียดของประเด็นนี้ พระเจ้าทรงเน้นย้ำความสำคัญของการลงมือทำด้วยหัวใจที่ถ่อมลง และการไว้วางใจในพระสัญญาอย่างแท้จริง)`;
+                });
+
+                // Add deep-dive application scene
+                currentProjectData.scenes.push({
+                    sceneNum: currentProjectData.scenes.length + 1,
+                    timecode: "7:30 - 9:00",
+                    narration: "เจาะลึกคำสอนและการประยุกต์ใช้เพิ่มเติม: เมื่อเราพิจารณาถึงรากศัพท์เดิม ความอดทนและการรอคอยในพระเจ้า (คาวาห์ ในภาษาฮีบรู) ไม่ใช่การนั่งรอด้วยความท้อแท้ แต่คือการคาดหวังด้วยความตื่นเต้นเหมือนคนที่รอคอยรุ่งอรุณ",
+                    prompt: "Watchman looking at morning sunrise from church tower, hopeful glowing sky --ar 16:9"
+                });
+            }
+
+            renderScenesList(currentProjectData.scenes);
+            renderAudioList(currentProjectData.scenes);
+            renderVisualPrompts(currentProjectData.scenes);
+
+            setTimeout(() => {
+                closeModalAlert();
+            }, 600);
+        }
+
+        // Initialize App
+        window.onload = function() {
+            renderLibraryItems();
+            updateLibraryCount();
+        };
+
+        // Quick Topic Fill
+        function setQuickTopic(topic) {
+            document.getElementById('input-topic').value = topic;
+        }
+
+        // Stepper Navigation
+        function goToStep(step) {
+            if (step < 1 || step > 6) return;
+            
+            // Hide all steps
+            document.querySelectorAll('.step-panel').forEach(panel => panel.classList.add('hidden'));
+            
+            // Show target step
+            document.getElementById(`step-${step}`).classList.remove('hidden');
+
+            // Update indicators styling
+            for (let i = 1; i <= 6; i++) {
+                const btn = document.getElementById(`step-btn-${i}`);
+                const badge = btn.querySelector('span:first-child');
+                
+                if (i === step) {
+                    btn.className = "step-indicator flex items-center space-x-2 text-amber-600 dark:text-amber-400 font-semibold";
+                    badge.className = "w-8 h-8 rounded-full bg-amber-500 text-white flex items-center justify-center text-sm font-bold shadow-md shadow-amber-500/30";
+                } else if (i < step) {
+                    btn.className = "step-indicator flex items-center space-x-2 text-emerald-600 dark:text-emerald-400 font-medium";
+                    badge.className = "w-8 h-8 rounded-full bg-emerald-500 text-white flex items-center justify-center text-sm font-bold";
+                    badge.innerHTML = '<i class="fa-solid fa-check text-xs"></i>';
+                } else {
+                    btn.className = "step-indicator flex items-center space-x-2 text-slate-400 font-normal";
+                    badge.className = "w-8 h-8 rounded-full bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-400 flex items-center justify-center text-sm font-bold";
+                    badge.innerHTML = i;
+                }
+            }
+            
+            currentStep = step;
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // STEP 2: Generate Script Logic (Gemini API Integration Simulation)
+        async function generateScriptWithAI() {
+            const topic = document.getElementById('input-topic').value.trim() || 'พระเจ้าทรงอยู่กับเรา';
+            const category = document.getElementById('select-category').value;
+            const tone = document.getElementById('select-tone').value;
+
+            showModalAlert("กำลังประมวลผล", "AI กำลังเรียบเรียงบทเฝ้าเดี่ยวและค้นหาข้อพระคัมภีร์ภาษาไทยที่สอดคล้อง...");
+
+            // Check template fallback or call Gemini Endpoint
+            let data = sampleScenesData[topic];
+
+            if (!data) {
+                // Dynamically build script for customized topics
+                data = {
+                    scriptureText: `"เพราะเราประสงค์ความรักมั่นคง ไม่ใช่การถวายสัตวบูชา และประสงค์ความรู้ใน 하나님 มากกว่าเครื่องเผาบูชา"`,
+                    scriptureRef: `โฮเชยา 6:6 (THSV11)`,
+                    scenes: [
+                        {
+                            sceneNum: 1,
+                            timecode: "0:00 - 0:40",
+                            narration: `ยินดีต้อนรับสู่รายการพระวจนะประจำวัน ศาลาธรรมยุ้งฉาง หัวข้อวันนี้คือ "${topic}"`,
+                            prompt: `Serene wooden granary barn surrounded by golden wheat fields at dawn, spiritual Christian atmosphere, 8k resolution --ar 16:9`
+                        },
+                        {
+                            sceneNum: 2,
+                            timecode: "0:40 - 1:30",
+                            narration: `พระเจ้าทรงสอนให้เราไว้วางใจในพระองค์ บทเรียนเรื่อง ${topic} ยืนยันว่า ความรักของพระองค์โอบล้อมชีวิตเราเสมอ`,
+                            prompt: `Warm sunlight beaming through ancient church windows onto a wooden cross, peaceful divine atmosphere --ar 16:9`
+                        },
+                        {
+                            sceneNum: 3,
+                            timecode: "1:30 - 2:30",
+                            narration: `ขอให้หัวข้อ "${topic}" นี้ เติมเต็มพลังความเชื่อและสันติสุขในจิตวิญญาณของท่านในวันนี้`,
+                            prompt: `Hands praying gently over an open holy bible with glowing golden light --ar 16:9`
+                        }
+                    ]
+                };
+            }
+
+            // Save to current state
+            currentProjectData.topic = topic;
+            currentProjectData.category = category;
+            currentProjectData.tone = tone;
+            currentProjectData.scripture.text = data.scriptureText;
+            currentProjectData.scripture.ref = data.scriptureRef;
+            currentProjectData.scenes = data.scenes;
+
+            // Render to Step 2 UI
+            document.getElementById('scripture-main-text').innerText = data.scriptureText;
+            document.getElementById('scripture-ref').innerText = `— ${data.scriptureRef}`;
+            
+            renderScenesList(data.scenes);
+            renderAudioList(data.scenes);
+            renderVisualPrompts(data.scenes);
+
+            setTimeout(() => {
+                closeModalAlert();
+                goToStep(2);
+            }, 800);
+        }
+
+        // Render Scenes List in Step 2
+        function renderScenesList(scenes) {
+            const container = document.getElementById('scenes-container');
+            container.innerHTML = '';
+
+            scenes.forEach((sc, idx) => {
+                const card = document.createElement('div');
+                card.className = "bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-4 space-y-3";
+                card.innerHTML = `
+                    <div class="flex justify-between items-center text-xs font-bold text-amber-600 dark:text-amber-400 border-b border-slate-200 dark:border-slate-800 pb-2">
+                        <span class="flex items-center gap-1">
+                            <i class="fa-solid fa-film"></i> ฉากที่ ${sc.sceneNum} (${sc.timecode})
+                        </span>
+                        <button onclick="removeScene(${idx})" class="text-slate-400 hover:text-red-500">
+                            <i class="fa-solid fa-trash"></i>
+                        </button>
+                    </div>
+                    <div class="space-y-1">
+                        <label class="text-xs font-semibold text-slate-600 dark:text-slate-400">บทบรรยาย (Narration Text):</label>
+                        <textarea onchange="updateNarrationText(${idx}, this.value)" rows="2" class="w-full p-2.5 text-sm rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-white">${sc.narration}</textarea>
+                    </div>
+                    <div class="space-y-1">
+                        <label class="text-xs font-semibold text-slate-600 dark:text-slate-400">Visual Prompt (สร้างภาพ/วิดีโอ):</label>
+                        <input type="text" value="${sc.prompt}" onchange="updatePromptText(${idx}, this.value)" class="w-full p-2 text-xs rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 font-mono text-slate-700 dark:text-slate-300">
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function updateNarrationText(idx, val) {
+            currentProjectData.scenes[idx].narration = val;
+            renderAudioList(currentProjectData.scenes);
+        }
+
+        function updatePromptText(idx, val) {
+            currentProjectData.scenes[idx].prompt = val;
+            renderVisualPrompts(currentProjectData.scenes);
+        }
+
+        function removeScene(idx) {
+            currentProjectData.scenes.splice(idx, 1);
+            renderScenesList(currentProjectData.scenes);
+        }
+
+        function addNewScene() {
+            const nextNum = currentProjectData.scenes.length + 1;
+            currentProjectData.scenes.push({
+                sceneNum: nextNum,
+                timecode: `0${nextNum}:00 - 0${nextNum}:45`,
+                narration: 'เพิ่มคำบรรยายข้อคิดคริสเตียนใหม่ที่นี่...',
+                prompt: 'Golden cross with sunbeams in peaceful nature scene --ar 16:9'
+            });
+            renderScenesList(currentProjectData.scenes);
+        }
+
+        // STEP 3: Voice Selection Logic
+        function selectVoice(voiceId) {
+            activeVoice = voiceId;
+            currentProjectData.voice = voiceId;
+
+            document.querySelectorAll('.voice-card').forEach(card => {
+                card.className = "voice-card border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 rounded-xl p-4 cursor-pointer hover:border-amber-400 transition";
+            });
+
+            const selectedCard = document.getElementById(`voice-card-${voiceId}`);
+            if (selectedCard) {
+                selectedCard.className = "voice-card border-2 border-amber-500 bg-amber-50/50 dark:bg-slate-700/50 rounded-xl p-4 cursor-pointer transition";
+            }
+        }
+
+        function renderAudioList(scenes) {
+            const container = document.getElementById('audio-scene-list');
+            if (!container) return;
+            container.innerHTML = '';
+
+            scenes.forEach((sc, i) => {
+                const item = document.createElement('div');
+                item.className = "bg-white dark:bg-slate-800 p-3 rounded-lg border border-slate-200 dark:border-slate-700 flex items-center justify-between gap-3";
+                item.innerHTML = `
+                    <div class="flex-1 text-xs">
+                        <div class="font-bold text-amber-600 dark:text-amber-400">ฉากที่ ${sc.sceneNum}</div>
+                        <div class="text-slate-700 dark:text-slate-300 truncate max-w-sm">${sc.narration}</div>
+                    </div>
+                    <button onclick="previewAudioClip(${i})" class="px-3 py-1.5 bg-slate-100 dark:bg-slate-700 hover:bg-amber-500 hover:text-white text-slate-700 dark:text-slate-200 text-xs rounded-lg transition flex items-center gap-1 shrink-0">
+                        <i class="fa-solid fa-volume-high"></i> ฟังตัวอย่าง
+                    </button>
+                `;
+                container.appendChild(item);
+            });
+
+            document.getElementById('audio-duration-txt').innerText = `ความยาวประมาณ: ${scenes.length * 45} วินาที`;
+        }
+
+        // Real Chirp 3 HD backend integration. Google credentials remain on the server.
+        const chirpAudioCache = new Map();
+        function chirpBaseUrl() {
+            return (document.getElementById('chirp-api-base')?.value || 'http://localhost:8787').trim().replace(/\/$/, '');
+        }
+        function chirpHeaders(json=true) {
+            const h = {};
+            if (json) h['Content-Type'] = 'application/json';
+            const token = document.getElementById('chirp-api-token')?.value;
+            if (token) h['x-app-token'] = token;
+            return h;
+        }
+        function setChirpStatus(message, good=false) {
+            const el = document.getElementById('chirp-status');
+            if (!el) return;
+            el.textContent = message;
+            el.className = 'text-xs rounded-full px-3 py-1 ' + (good ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800');
+        }
+        async function connectChirpBackend() {
+            const select = document.getElementById('chirp-voice');
+            setChirpStatus('กำลังเชื่อมต่อ…');
+            try {
+                const res = await fetch(chirpBaseUrl() + '/api/voices', {headers: chirpHeaders(false)});
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.error || 'เชื่อมต่อ Backend ไม่สำเร็จ');
+                const voices = data.voices || [];
+                select.innerHTML = '';
+                if (!voices.length) throw new Error('ไม่พบเสียง Chirp 3 HD ภาษาไทยในโปรเจกต์ Google Cloud');
+                voices.forEach(v => {
+                    const opt = document.createElement('option');
+                    opt.value = v.name;
+                    opt.textContent = `${v.name}${v.ssmlGender ? ' · ' + v.ssmlGender : ''}`;
+                    select.appendChild(opt);
+                });
+                setChirpStatus(`เชื่อมต่อแล้ว · ${voices.length} เสียง`, true);
+                showModalAlert('เชื่อมต่อ Google Chirp 3 HD', `Backend ทำงานและพบเสียงภาษาไทย ${voices.length} รายการ`);
+            } catch (err) {
+                setChirpStatus('เชื่อมต่อไม่สำเร็จ');
+                showModalAlert('เชื่อมต่อ Voice Backend ไม่สำเร็จ', err.message + '\nตรวจสอบว่า Backend ทำงานอยู่ และตั้งค่า Google Cloud credentials แล้ว');
+            }
+        }
+        function makeNaturalMarkup(text) {
+            // Chirp 3 HD pause controls require markup input. Thai supports pause tags.
+            // Preserve explicit slash pause markers, then add restrained short pauses at sentence boundaries.
+            let t = String(text || '').replace(/\r/g, '').trim();
+            t = t.replace(/\/\/\//g, '[pause long]').replace(/\/\//g, '[pause]').replace(/\//g, '[pause short]');
+            t = t.replace(/([.!?…])\s*/g, '$1 [pause short] ');
+            t = t.replace(/(ครับ|ค่ะ|นะคะ|นะครับ)\s*/g, '$1 [pause short] ');
+            return t.replace(/(?:\s*\[pause(?: short| long)?\]\s*){2,}/g, ' [pause] ').trim();
+        }
+        async function synthesizeSceneAudio(idx, format='LINEAR16', play=true) {
+            const sc = currentProjectData.scenes[idx];
+            const voiceName = document.getElementById('chirp-voice')?.value;
+            if (!voiceName) { showModalAlert('ยังไม่ได้เลือกเสียง', 'กด “เชื่อมต่อ / โหลดเสียง” ก่อน'); return null; }
+            if (!sc || !sc.narration?.trim()) { showModalAlert('ไม่มีบทบรรยาย', 'กรุณาใส่ข้อความก่อนสร้างเสียง'); return null; }
+            const rate = parseFloat(document.getElementById('voice-speed')?.value || '0.95');
+            const cacheKey = `${idx}:${format}:${voiceName}:${sc.narration}:${rate}`;
+            if (chirpAudioCache.has(cacheKey)) {
+                const cached = chirpAudioCache.get(cacheKey);
+                if (play) playAudioUrl(cached.url);
+                return cached;
+            }
+            setChirpStatus(`กำลังสร้างเสียงฉาก ${sc.sceneNum}…`);
+            try {
+                const res = await fetch(chirpBaseUrl() + '/api/synthesize', {
+                    method: 'POST', headers: chirpHeaders(),
+                    body: JSON.stringify({text: sc.narration, markup: makeNaturalMarkup(sc.narration), voiceName, speakingRate: rate, outputFormat: format})
+                });
+                if (!res.ok) {
+                    let msg = 'สร้างเสียงไม่สำเร็จ';
+                    try { const e = await res.json(); msg = e.error || msg; } catch (_) {}
+                    throw new Error(msg);
+                }
+                const blob = await res.blob();
+                const url = URL.createObjectURL(blob);
+                const result = {url, blob, format, filename: `granary-scene-${sc.sceneNum}.${format === 'MP3' ? 'mp3' : 'wav'}`};
+                chirpAudioCache.set(cacheKey, result);
+                setChirpStatus(`สร้างเสียงฉาก ${sc.sceneNum} แล้ว`, true);
+                if (play) playAudioUrl(url);
+                return result;
+            } catch (err) {
+                setChirpStatus('สร้างเสียงไม่สำเร็จ');
+                showModalAlert('Google Chirp 3 HD', err.message);
+                return null;
+            }
+        }
+        let currentChirpAudio = null;
+        function playAudioUrl(url) {
+            if (currentChirpAudio) { currentChirpAudio.pause(); currentChirpAudio = null; }
+            currentChirpAudio = new Audio(url);
+            currentChirpAudio.play().catch(e => showModalAlert('เล่นเสียงไม่ได้', e.message));
+        }
+        function downloadChirpAudio(item) {
+            if (!item) return;
+            const a = document.createElement('a'); a.href = item.url; a.download = item.filename;
+            document.body.appendChild(a); a.click(); a.remove();
+        }
+        async function previewAudioClip(idx) {
+            await synthesizeSceneAudio(idx, 'LINEAR16', true);
+        }
+        async function generateAllAudioClips(format='LINEAR16') {
+            if (!document.getElementById('chirp-voice')?.value) { showModalAlert('ยังไม่ได้เชื่อมต่อ', 'กด “เชื่อมต่อ / โหลดเสียง” ก่อน'); return; }
+            const scenes = currentProjectData.scenes || [];
+            if (!scenes.length) { showModalAlert('ไม่มีฉาก', 'กรุณาสร้างฉากและบทบรรยายก่อน'); return; }
+            const outputs = [];
+            for (let i=0; i<scenes.length; i++) {
+                setChirpStatus(`กำลังสร้าง ${i+1}/${scenes.length}…`);
+                const item = await synthesizeSceneAudio(i, format, false);
+                if (!item) return;
+                outputs.push(item);
+            }
+            outputs.forEach(downloadChirpAudio);
+            setChirpStatus(`สร้าง ${format === 'MP3' ? 'MP3' : 'WAV'} ครบ ${outputs.length} ฉาก`, true);
+            showModalAlert('สร้างไฟล์เสียงเสร็จแล้ว', `สร้างไฟล์ ${format === 'MP3' ? 'MP3' : 'WAV'} จำนวน ${outputs.length} ฉาก และเริ่มดาวน์โหลดแล้ว`);
+        }
+
+        function togglePlayFullAudio() {
+            const btn = document.getElementById('main-audio-play-btn');
+            if (btn.innerHTML.includes('play')) {
+                btn.innerHTML = '<i class="fa-solid fa-pause"></i>';
+                // Generate and play the first scene through the real Chirp backend.
+                if (currentProjectData.scenes.length > 0) synthesizeSceneAudio(0, 'LINEAR16', true);
+            } else {
+                btn.innerHTML = '<i class="fa-solid fa-play"></i>';
+                if (currentChirpAudio) currentChirpAudio.pause();
+            }
+        }
+
+        // STEP 4: Render Visual Prompts Grid
+        function renderVisualPrompts(scenes) {
+            const grid = document.getElementById('visual-prompts-grid');
+            if (!grid) return;
+            grid.innerHTML = '';
+
+            scenes.forEach((sc, i) => {
+                const card = document.createElement('div');
+                card.className = "bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-4 space-y-3";
+                
+                // Placeholder image based on scene index
+                const imgPlaceholder = `https://placehold.co/800x450/1e293b/d4af37?text=Granary+Scene+${sc.sceneNum}`;
+
+                card.innerHTML = `
+                    <div class="aspect-video rounded-lg overflow-hidden bg-slate-800 relative group">
+                        <img src="${imgPlaceholder}" id="scene-preview-img-${i}" class="w-full h-full object-cover">
+                        <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition flex items-center justify-center gap-2">
+                            <button onclick="regenerateImage(${i})" class="px-3 py-1.5 bg-amber-500 text-white text-xs rounded-lg font-semibold shadow">
+                                <i class="fa-solid fa-arrows-rotate"></i> เจนภาพใหม่ (Imagen)
+                            </button>
+                        </div>
+                        <span class="absolute top-2 left-2 bg-black/70 text-amber-400 text-[10px] font-bold px-2 py-0.5 rounded">
+                            ฉากที่ ${sc.sceneNum}
+                        </span>
+                    </div>
+
+                    <div class="space-y-1">
+                        <label class="text-xs font-bold text-slate-700 dark:text-slate-300">Prompt สำหรับ AI Image Generator:</label>
+                        <div class="bg-white dark:bg-slate-800 p-2.5 rounded-lg border border-slate-200 dark:border-slate-700 text-xs font-mono text-slate-600 dark:text-slate-300 flex justify-between items-center gap-2">
+                            <span class="truncate">${sc.prompt}</span>
+                            <button onclick="copyToClipboard('${sc.prompt.replace(/'/g, "\\'")}')" class="text-amber-600 hover:text-amber-700 text-xs shrink-0">
+                                <i class="fa-solid fa-copy"></i>
+                            </button>
+                        </div>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        function updateVisualPromptsStyle() {
+            const style = document.getElementById('visual-style').value;
+            currentProjectData.visualStyle = style;
+            showModalAlert("เปลี่ยนสไตล์ภาพ", `ปรับการสร้างภาพเป็นสไตล์: ${style}`);
+        }
+
+        function regenerateImage(idx) {
+            const img = document.getElementById(`scene-preview-img-${idx}`);
+            if (img) {
+                img.src = `https://placehold.co/800x450/0f172a/f59e0b?text=Generated+Scene+${idx + 1}+(${Date.now().toString().slice(-4)})`;
+            }
+        }
+
+        // STEP 5: Timeline Controls
+        function toggleTimelinePlay() {
+            const icon = document.getElementById('timeline-play-icon');
+            if (icon.classList.contains('fa-play')) {
+                icon.className = 'fa-pause';
+                showModalAlert("เล่นตัวอย่างวิดีโอ", "กำลังพรีวิววิดีโอรวมสื่อพร้อมคำบรรยายและเพลงประกอบ...");
+            } else {
+                icon.className = 'fa-play ml-1';
+            }
+        }
+
+        function renderVideoDraft() {
+            showModalAlert("Render วิดีโอสำเร็จ", "ระบบประมวลผลคลิปวิดีโอรวมสื่อและซับไตเติ้ลเรียบร้อยแล้ว พร้อมเผยแพร่บน YouTube!");
+        }
+
+        // STEP 6: YouTube Publishing & Storage
+        function regenerateThumbnail() {
+            const thumb = document.getElementById('yt-thumb-img');
+            thumb.src = `https://placehold.co/1280x720/1e293b/d4af37?text=%E0%B8%A8%E0%B8%B2%E0%B8%A5%E0%B8%B2%E0%B8%98%E0%B8%A3%E0%B8%A3%E0%B8%A1%E0%B8%A2%E0%B8%B8%E0%B9%89%E0%B8%87%E0%B8%89%E0%B8%B2%E0%B8%87+Thumbnail+(${Date.now().toString().slice(-4)})`;
+        }
+
+        function publishToYouTube() {
+            const title = document.getElementById('yt-title').value;
+            const privacy = document.getElementById('yt-privacy').value;
+
+            showModalAlert("กำลังอัปโหลดลง YouTube", `กำลังส่งคลิป "${title}" ไปยังช่องศาลาธรรมยุ้งฉาง (สถานะ: ${privacy})...`);
+
+            // Add to library as published
+            savedLibrary.unshift({
+                id: 'lib_' + Date.now(),
+                topic: currentProjectData.topic || title,
+                category: currentProjectData.category || 'ข้อคิดและเฝ้าเดี่ยว',
+                date: new Date().toLocaleDateString('th-TH'),
+                status: 'อัปโหลดลง YouTube แล้ว (' + privacy + ')',
+                thumb: document.getElementById('yt-thumb-img').src,
+                scripture: currentProjectData.scripture.ref || 'อิสยาห์ 41:10'
+            });
+
+            renderLibraryItems();
+            updateLibraryCount();
+        }
+
+        function downloadVideoMP4() {
+            showModalAlert("ดาวน์โหลด MP4", "กำลังส่งออกไฟล์วิดีโอความละเอียด 1080p ลงเครื่องของคุณ...");
+        }
+
+        function saveProjectToLibrary() {
+            savedLibrary.unshift({
+                id: 'lib_' + Date.now(),
+                topic: currentProjectData.topic || 'โครงการใหม่',
+                category: currentProjectData.category || 'ข้อคิดและเฝ้าเดี่ยว',
+                date: new Date().toLocaleDateString('th-TH'),
+                status: 'ร่างวิดีโอ (Draft)',
+                thumb: document.getElementById('yt-thumb-img').src,
+                scripture: currentProjectData.scripture.ref || 'อิสยาห์ 41:10'
+            });
+
+            renderLibraryItems();
+            updateLibraryCount();
+            showModalAlert("บันทึกสำเร็จ", "บันทึกโครงการไว้ในคลังผลงานเรียบร้อยแล้ว");
+        }
+
+        // LIBRARY PAGE LOGIC
+        function renderLibraryItems() {
+            const container = document.getElementById('library-grid');
+            if (!container) return;
+            container.innerHTML = '';
+
+            savedLibrary.forEach(item => {
+                const card = document.createElement('div');
+                card.className = "bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl overflow-hidden shadow-sm hover:shadow-md transition";
+                card.innerHTML = `
+                    <div class="aspect-video bg-slate-800 relative">
+                        <img src="${item.thumb}" class="w-full h-full object-cover">
+                        <span class="absolute top-2 right-2 px-2 py-0.5 text-[10px] font-bold rounded ${item.status.includes('YouTube') ? 'bg-red-600 text-white' : 'bg-amber-500 text-white'}">
+                            ${item.status}
+                        </span>
+                    </div>
+                    <div class="p-4 space-y-2">
+                        <div class="text-xs text-amber-600 dark:text-amber-400 font-semibold">${item.category} • ${item.date}</div>
+                        <h3 class="font-bold text-slate-900 dark:text-white text-sm line-clamp-1">${item.topic}</h3>
+                        <div class="text-xs text-slate-500 dark:text-slate-400 font-serif">ข้อพระคัมภีร์: ${item.scripture}</div>
+                        
+                        <div class="pt-2 border-t border-slate-100 dark:border-slate-800 flex justify-between items-center text-xs">
+                            <button onclick="loadLibraryProject('${item.id}')" class="text-amber-600 dark:text-amber-400 font-semibold hover:underline">
+                                <i class="fa-solid fa-pen-to-square mr-1"></i> แก้ไขบท
+                            </button>
+                            <button onclick="deleteLibraryProject('${item.id}')" class="text-slate-400 hover:text-red-500">
+                                <i class="fa-solid fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function updateLibraryCount() {
+            const badge = document.getElementById('library-count');
+            if (badge) badge.innerText = savedLibrary.length;
+        }
+
+        function filterLibrary() {
+            const query = document.getElementById('library-search').value.toLowerCase();
+            const cards = document.querySelectorAll('#library-grid > div');
+            
+            cards.forEach(card => {
+                const text = card.innerText.toLowerCase();
+                if (text.includes(query)) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
+
+        function deleteLibraryProject(id) {
+            savedLibrary = savedLibrary.filter(i => i.id !== id);
+            renderLibraryItems();
+            updateLibraryCount();
+        }
+
+        function loadLibraryProject(id) {
+            switchTab('create');
+            goToStep(2);
+        }
+
+        // VIEW SWITCHING
+        function switchTab(tabName) {
+            // Hide all views
+            document.getElementById('view-create').classList.add('hidden');
+            document.getElementById('view-library').classList.add('hidden');
+            document.getElementById('view-settings').classList.add('hidden');
+            document.getElementById('view-studio').classList.add('hidden');
+
+            // Show selected
+            document.getElementById(`view-${tabName}`).classList.remove('hidden');
+
+            // Nav active state update
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.className = "nav-btn px-3 py-2 rounded-lg text-sm font-medium flex items-center space-x-2 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700";
+            });
+
+            const activeBtn = document.getElementById(`nav-${tabName}`);
+            if (activeBtn) {
+                activeBtn.className = "nav-btn px-3 py-2 rounded-lg text-sm font-medium flex items-center space-x-2 bg-amber-50 dark:bg-slate-700 text-amber-700 dark:text-amber-400";
+            }
+        }
+
+        // DARK MODE TOGGLE
+        function toggleDarkMode() {
+            const html = document.documentElement;
+            const icon = document.getElementById('theme-icon');
+            if (html.classList.contains('dark')) {
+                html.classList.remove('dark');
+                icon.className = 'fa-solid fa-moon text-lg';
+            } else {
+                html.classList.add('dark');
+                icon.className = 'fa-solid fa-sun text-lg text-amber-400';
+            }
+        }
+
+        // HELPER UTILS
+        function copyToClipboard(text) {
+            const tempInput = document.createElement('textarea');
+            tempInput.value = text;
+            document.body.appendChild(tempInput);
+            tempInput.select();
+            document.execCommand('copy');
+            document.body.removeChild(tempInput);
+            showModalAlert("คัดลอกสำเร็จ", "คัดลอก Text Prompt เรียบร้อยแล้ว");
+        }
+
+        function simulateOAuthConnect() {
+            showModalAlert("เชื่อมต่อสำเร็จ", "ระบบยืนยันสิทธิ์ OAuth กับช่อง YouTube 'ศาลาธรรมยุ้งฉาง Official' เรียบร้อยแล้ว");
+        }
+
+        function saveSettingsAlert() {
+            showModalAlert("บันทึกเรียบร้อย", "บันทึกการตั้งค่า Gemini API Key และ YouTube Config เรียบร้อยแล้ว");
+        }
+
+        function showModalAlert(title, message) {
+            document.getElementById('modal-title').innerText = title;
+            document.getElementById('modal-message').innerText = message;
+            document.getElementById('modal-alert').classList.remove('hidden');
+        }
+
+        function closeModalAlert() {
+            document.getElementById('modal-alert').classList.add('hidden');
+        }
+
+        // GRANARY VIDEO STUDIO — browser-based MVP with real media import and MP4 rendering
+        const studio = { media: [], clips: [], selected: null, playhead: 0, playing: false, raf: null, audio: [], db: null };
+        const studioDBName = 'granary-video-studio-v1';
+        function studioDB(){ return new Promise((resolve,reject)=>{ const req=indexedDB.open(studioDBName,1); req.onupgradeneeded=()=>{const db=req.result;if(!db.objectStoreNames.contains('projects'))db.createObjectStore('projects');};req.onsuccess=()=>resolve(req.result);req.onerror=()=>reject(req.error); }); }
+        async function studioImportFiles(e){ const files=[...e.target.files]; for(const file of files){if(!file.type.startsWith('image/')&&!file.type.startsWith('audio/'))continue;const item={id:'m'+Date.now()+Math.random().toString(16).slice(2),name:file.name,type:file.type.startsWith('image/')?'image':'audio',mime:file.type,size:file.size,blob:file,url:URL.createObjectURL(file)};studio.media.push(item);} e.target.value='';studioRenderMedia();studioSetStatus('นำเข้าสื่อ '+files.length+' ไฟล์แล้ว'); }
+        function studioRenderMedia(){const el=document.getElementById('studio-media-list');if(!studio.media.length){el.innerHTML='<p class="text-xs text-slate-500">ยังไม่มีไฟล์</p>';return;}el.innerHTML=studio.media.map(m=>`<button onclick="studioSelectMedia('${m.id}')" class="w-full flex items-center gap-2 p-2 rounded-lg border text-left border-slate-200 dark:border-slate-700 hover:border-amber-400"><span class="w-9 h-9 rounded bg-slate-100 dark:bg-slate-700 flex items-center justify-center">${m.type==='image'?'<i class="fa-regular fa-image"></i>':'<i class="fa-solid fa-volume-high"></i>'}</span><span class="min-w-0 flex-1"><span class="block text-xs font-semibold truncate">${studioEsc(m.name)}</span><span class="block text-[10px] text-slate-500">${(m.size/1024/1024).toFixed(2)} MB</span></span></button>`).join('');}
+        function studioEsc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+        function studioSelectMedia(id){studio.selected=id;const m=studio.media.find(x=>x.id===id);document.getElementById('studio-inspector').innerHTML=m?`<div class="font-semibold break-all">${studioEsc(m.name)}</div><div class="text-xs text-slate-500 mt-1">${m.type==='image'?'ภาพ':'เสียง'} • ${(m.size/1024/1024).toFixed(2)} MB</div>`:'เลือกคลิปใน Timeline เพื่อแก้ไข';}
+        function studioAddSelected(track){const m=studio.media.find(x=>x.id===studio.selected);if(!m){studioSetStatus('กรุณาเลือกไฟล์จากคลังสื่อก่อน');return;}if(track==='video'&&m.type!=='image'){studioSetStatus('Video Track ในรุ่นนี้รองรับภาพนิ่ง กรุณาเลือกไฟล์ภาพ');return;}if(track!=='video'&&m.type!=='audio'){studioSetStatus('กรุณาเลือกไฟล์เสียง');return;}const clip={id:'c'+Date.now()+Math.random().toString(16).slice(2),mediaId:m.id,track,duration:track==='video'?5:0,volume:track==='music'?0.22:1,start:0};if(track!=='video'){const a=new Audio(m.url);a.preload='metadata';a.onloadedmetadata=()=>{clip.duration=Number.isFinite(a.duration)?a.duration:10;studioRenderTimeline();};}studio.clips.push(clip);studioRenderTimeline();studioDrawPreview();}
+        function studioClipDuration(c){return Math.max(.2,Number(c.duration)||.2)}
+        function studioTotal(){return studio.clips.filter(c=>c.track==='video').reduce((n,c)=>n+studioClipDuration(c),0)}
+        function studioRenderTimeline(){const el=document.getElementById('studio-timeline');if(!studio.clips.length){el.innerHTML='<p class="text-sm text-slate-500 py-4 text-center">ยังไม่มีคลิปใน Timeline</p>';return;}const tracks=['video','voice','music'];el.innerHTML=tracks.map(t=>{const cs=studio.clips.filter(c=>c.track===t);return `<div class="rounded-lg border border-slate-200 dark:border-slate-700 p-2"><div class="text-xs font-bold mb-2">${t==='video'?'🎞 Video Track':t==='voice'?'🎙 Voice-over Track':'🎵 Music Track'}</div>${cs.length?cs.map((c,i)=>{const m=studio.media.find(x=>x.id===c.mediaId);return `<div draggable="true" ondragstart="studioDragStart(event,'${c.id}')" ondragover="event.preventDefault()" ondrop="studioDrop(event,'${c.id}')" class="studio-clip flex flex-wrap items-center gap-2 p-2 mb-1 rounded bg-${t==='video'?'amber':t==='voice'?'blue':'green'}-50 border border-slate-200 text-slate-800" onclick="studioSelectClip('${c.id}')"><span class="text-[10px] font-bold">${i+1}</span><span class="text-xs flex-1 min-w-0 truncate">${studioEsc(m?.name||'media')}</span>${t==='video'?`<input aria-label="duration" type="number" min="0.2" max="600" step="0.5" value="${c.duration}" onclick="event.stopPropagation()" onchange="studioSetDuration('${c.id}',this.value)" class="w-16 text-xs p-1 rounded border">`:''}<span class="text-[10px]">${studioFmt(c.duration)}</span><button onclick="event.stopPropagation();studioMove('${c.id}',-1)" class="px-1" title="เลื่อนขึ้น">↑</button><button onclick="event.stopPropagation();studioMove('${c.id}',1)" class="px-1" title="เลื่อนลง">↓</button><button onclick="event.stopPropagation();studioRemove('${c.id}')" class="text-red-600 px-1" title="ลบ">×</button></div>`}).join(''):'<div class="text-[10px] text-slate-400">ยังไม่มีคลิป</div>'}</div>`}).join('');document.getElementById('studio-duration-label').textContent='ความยาว '+studioFmt(studioTotal());}
+        function studioSetDuration(id,v){const c=studio.clips.find(x=>x.id===id);if(c){c.duration=Math.max(.2,Math.min(600,Number(v)||5));studioRenderTimeline();studioDrawPreview();}}
+        function studioSelectClip(id){const c=studio.clips.find(x=>x.id===id);if(!c)return;studio.selected=id;const m=studio.media.find(x=>x.id===c.mediaId);document.getElementById('studio-inspector').innerHTML=`<div class="font-semibold break-all mb-2">${studioEsc(m?.name||'คลิป')}</div><label class="text-xs">ระยะเวลา (วินาที)</label><input type="number" min="0.2" step="0.5" value="${c.duration}" onchange="studioSetDuration('${id}',this.value)" class="w-full p-2 border rounded-lg bg-transparent mb-2"><label class="text-xs">ระดับเสียง</label><input type="range" min="0" max="1" step="0.05" value="${c.volume}" oninput="studioSetVolume('${id}',this.value)" class="w-full"><p class="text-xs text-slate-500 mt-2">${c.track==='video'?'ภาพนิ่งใน Video Track':c.track==='voice'?'เสียงพากย์':'เพลงพื้นหลัง'}</p>`;}
+        function studioSetVolume(id,v){const c=studio.clips.find(x=>x.id===id);if(c)c.volume=Number(v);}
+        function studioRemove(id){studio.clips=studio.clips.filter(c=>c.id!==id);studioRenderTimeline();studioDrawPreview();}
+        function studioMove(id,dir){const c=studio.clips.find(x=>x.id===id);if(!c)return;const arr=studio.clips.filter(x=>x.track===c.track);const i=arr.findIndex(x=>x.id===id),j=i+dir;if(j<0||j>=arr.length)return;const other=arr[j],a=studio.clips.indexOf(c),b=studio.clips.indexOf(other);[studio.clips[a],studio.clips[b]]=[studio.clips[b],studio.clips[a]];studioRenderTimeline();studioDrawPreview();}
+        let studioDragging=null;function studioDragStart(e,id){studioDragging=id;e.dataTransfer.setData('text/plain',id);}function studioDrop(e,id){e.preventDefault();const from=studioDragging||e.dataTransfer.getData('text/plain'),a=studio.clips.findIndex(x=>x.id===from),b=studio.clips.findIndex(x=>x.id===id);if(a<0||b<0||studio.clips[a].track!==studio.clips[b].track)return;const [x]=studio.clips.splice(a,1);studio.clips.splice(b,0,x);studioRenderTimeline();studioDrawPreview();}
+        function studioFmt(s){s=Math.max(0,Math.floor(Number(s)||0));return String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0');}
+        function studioFrameAt(t){let elapsed=0;for(const c of studio.clips.filter(x=>x.track==='video')){const d=studioClipDuration(c);if(t<elapsed+d)return {clip:c,local:t-elapsed};elapsed+=d;}return null;}
+        function studioDrawPreview(){const canvas=document.getElementById('studio-canvas'),ctx=canvas.getContext('2d'),ratio=document.getElementById('studio-ratio').value;canvas.width=ratio==='9:16'?720:ratio==='1:1'?720:1280;canvas.height=ratio==='9:16'?1280:ratio==='1:1'?720:720;ctx.fillStyle='#090d16';ctx.fillRect(0,0,canvas.width,canvas.height);const hit=studioFrameAt(studio.playhead);if(hit){const m=studio.media.find(x=>x.id===hit.clip.mediaId);if(m){const img=new Image();img.onload=()=>{ctx.fillStyle='#090d16';ctx.fillRect(0,0,canvas.width,canvas.height);const scale=Math.min(canvas.width/img.width,canvas.height/img.height);const w=img.width*scale,h=img.height*scale;ctx.drawImage(img,(canvas.width-w)/2,(canvas.height-h)/2,w,h);};img.src=m.url;}}else{ctx.fillStyle='#e2e8f0';ctx.font='28px sans-serif';ctx.textAlign='center';ctx.fillText('นำเข้าภาพและเพิ่มลง Timeline',canvas.width/2,canvas.height/2);}document.getElementById('studio-preview-time').textContent=studioFmt(studio.playhead)+' / '+studioFmt(studioTotal());}
+        function studioSyncAudio(){studio.audio.forEach(a=>{try{a.pause();}catch(e){}});studio.audio=[];for(const c of studio.clips.filter(x=>x.track==='voice'||x.track==='music')){const m=studio.media.find(x=>x.id===c.mediaId);if(!m)continue;const a=new Audio(m.url);a.volume=Math.max(0,Math.min(1,c.volume));a.currentTime=Math.min(studio.playhead,Math.max(0,(c.duration||0)-0.05));studio.audio.push(a);if(studio.playhead<c.duration)a.play().catch(()=>studioSetStatus('แตะปุ่มเล่นอีกครั้งเพื่ออนุญาตการเล่นเสียง'));}}
+        function studioPlay(){if(studio.playing)return;if(!studio.clips.some(c=>c.track==='video')){studioSetStatus('กรุณาเพิ่มภาพลง Video Track ก่อน');return;}studio.playing=true;studioSyncAudio();studio.last=performance.now();const tick=now=>{if(!studio.playing)return;studio.playhead+=(now-studio.last)/1000;studio.last=now;if(studio.playhead>=studioTotal()){studioPause();studio.playhead=0;}studioDrawPreview();studio.raf=requestAnimationFrame(tick);};studio.raf=requestAnimationFrame(tick);}
+        function studioPause(){studio.playing=false;if(studio.raf)cancelAnimationFrame(studio.raf);studio.audio.forEach(a=>a.pause());}
+        function studioRestart(){studioPause();studio.playhead=0;studioDrawPreview();}
+        function studioSetStatus(s){document.getElementById('studio-status').textContent=s;}
+        async function studioSaveProject(){try{const db=await studioDB();const tx=db.transaction('projects','readwrite');tx.objectStore('projects').put({media:studio.media.map(m=>({id:m.id,name:m.name,type:m.type,mime:m.mime,size:m.size,blob:m.blob})),clips:studio.clips,ratio:document.getElementById('studio-ratio').value,resolution:document.getElementById('studio-resolution').value},'current');tx.oncomplete=()=>studioSetStatus('บันทึกโปรเจกต์และไฟล์สื่อลงในเครื่องแล้ว');tx.onerror=()=>studioSetStatus('บันทึกไม่สำเร็จ: '+tx.error); }catch(e){studioSetStatus('บันทึกไม่สำเร็จ: '+e.message);}}
+        async function studioLoadProject(){try{const db=await studioDB();const req=db.transaction('projects','readonly').objectStore('projects').get('current');req.onsuccess=()=>{const data=req.result;if(!data){studioSetStatus('ไม่พบโปรเจกต์ที่บันทึกไว้');return;}studio.media.forEach(m=>URL.revokeObjectURL(m.url));studio.media=data.media.map(m=>({...m,url:URL.createObjectURL(m.blob)}));studio.clips=data.clips||[];document.getElementById('studio-ratio').value=data.ratio||'16:9';document.getElementById('studio-resolution').value=data.resolution||'720';studioRenderMedia();studioRenderTimeline();studioDrawPreview();studioSetStatus('เปิดโปรเจกต์จากเครื่องสำเร็จ');};}catch(e){studioSetStatus('เปิดโปรเจกต์ไม่สำเร็จ: '+e.message);}}
+        async function studioExport(){const videoClips=studio.clips.filter(c=>c.track==='video');if(!videoClips.length){studioSetStatus('ไม่มีภาพใน Video Track');return;}const btn=document.getElementById('studio-export-btn');btn.disabled=true;btn.classList.add('opacity-50');document.getElementById('studio-progress').style.width='2%';studioSetStatus('กำลังโหลด FFmpeg สำหรับสร้าง MP4...');try{const {FFmpeg}=await import('https://cdn.jsdelivr.net/npm/@ffmpeg/ffmpeg@0.12.10/dist/esm/index.js');const {toBlobURL,fetchFile}=await import('https://cdn.jsdelivr.net/npm/@ffmpeg/util@0.12.1/dist/esm/index.js');const ff=new FFmpeg();ff.on('progress',({progress})=>{document.getElementById('studio-progress').style.width=Math.max(3,Math.min(99,Math.round(progress*100)))+'%';studioSetStatus('กำลังเรนเดอร์ MP4 '+Math.round(progress*100)+'%');});ff.on('log',({message})=>{if(message)studioSetStatus(message.slice(-150));});const base='https://cdn.jsdelivr.net/npm/@ffmpeg/core@0.12.6/dist/umd';await ff.load({coreURL:await toBlobURL(base+'/ffmpeg-core.js','text/javascript'),wasmURL:await toBlobURL(base+'/ffmpeg-core.wasm','application/wasm')});let concat='';let idx=0;for(const c of videoClips){const m=studio.media.find(x=>x.id===c.mediaId);if(!m)continue;const ext=(m.name.split('.').pop()||'jpg').replace(/[^a-z0-9]/gi,'').toLowerCase();const name=`scene${idx}.${ext}`;await ff.writeFile(name,await fetchFile(m.blob));concat+=`file '${name}'\nduration ${studioClipDuration(c).toFixed(3)}\n`;idx++;}if(!idx)throw new Error('ไม่พบไฟล์ภาพที่ใช้งานได้');concat+=`file 'scene${idx-1}.${(studio.media.find(x=>x.id===videoClips[idx-1].mediaId).name.split('.').pop()||'jpg').replace(/[^a-z0-9]/gi,'').toLowerCase()}'\n`;await ff.writeFile('scenes.txt',new TextEncoder().encode(concat));const ratio=document.getElementById('studio-ratio').value,res=Number(document.getElementById('studio-resolution').value);const dims=ratio==='9:16'?[720,1280]:ratio==='1:1'?[720,720]:[res===1080?1920:1280,res===1080?1080:720];const voice=studio.clips.find(c=>c.track==='voice'),music=studio.clips.find(c=>c.track==='music');let args=['-f','concat','-safe','0','-i','scenes.txt'];let audioInputs=[];for(const [i,c] of [voice,music].entries()){if(!c)continue;const m=studio.media.find(x=>x.id===c.mediaId);if(!m)continue;const ext=(m.name.split('.').pop()||'mp3').replace(/[^a-z0-9]/gi,'').toLowerCase();const fn=`audio${i}.${ext}`;await ff.writeFile(fn,await fetchFile(m.blob));args.push('-i',fn);audioInputs.push({input:audioInputs.length+1,volume:c.volume});}args.push('-vf',`scale=${dims[0]}:${dims[1]}:force_original_aspect_ratio=decrease,pad=${dims[0]}:${dims[1]}:(ow-iw)/2:(oh-ih)/2,format=yuv420p`,'-r','25');if(audioInputs.length){const filters=audioInputs.map((a,i)=>`[${a.input}:a]volume=${a.volume}[a${i}]`).join(';')+';'+audioInputs.map((a,i)=>`[a${i}]`).join('')+`amix=inputs=${audioInputs.length}:duration=longest:dropout_transition=2[aout]`;args.push('-filter_complex',filters,'-map','0:v:0','-map','[aout]','-shortest');}else args.push('-map','0:v:0','-an');args.push('-c:v','libx264','-preset','ultrafast','-crf','23','-pix_fmt','yuv420p','-movflags','+faststart','output.mp4');await ff.exec(args);const data=await ff.readFile('output.mp4');const blob=new Blob([data.buffer],{type:'video/mp4'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='granary-video-'+new Date().toISOString().slice(0,10)+'.mp4';a.click();setTimeout(()=>URL.revokeObjectURL(url),60000);document.getElementById('studio-progress').style.width='100%';studioSetStatus('สร้าง MP4 สำเร็จ — ดาวน์โหลดไฟล์แล้ว');}catch(e){console.error(e);studioSetStatus('ส่งออกไม่สำเร็จ: '+e.message+' — ตรวจสอบอินเทอร์เน็ตและชนิดไฟล์ แล้วลองอีกครั้ง');}finally{btn.disabled=false;btn.classList.remove('opacity-50');}}
+        document.addEventListener('DOMContentLoaded',()=>{const c=document.getElementById('studio-canvas');if(c)studioDrawPreview();const ratio=document.getElementById('studio-ratio');if(ratio)ratio.addEventListener('change',studioDrawPreview);});
+    </script>
+
+<script>
+// Real Gemini integration: this override intentionally replaces the older local-template simulation.
+async function generateScriptWithAI() {
+  const topic = document.getElementById('input-topic')?.value.trim();
+  const category = document.getElementById('select-category')?.value || 'หนังสั้นคริสเตียน';
+  const tone = document.getElementById('select-tone')?.value || 'อบอุ่น';
+  const audience = document.getElementById('input-audience')?.value || 'ผู้ชมทั่วไป';
+  if (!topic) { showModalAlert('กรุณาระบุหัวข้อ', 'ใส่หัวข้อหนังสั้นก่อนเริ่มสร้างบท'); return; }
+  showModalAlert('กำลังสร้างบทด้วย Gemini', 'กำลังส่งคำขอไปยัง Backend อย่างปลอดภัย...');
+  try {
+    const health = await fetch('/api/health');
+    if (!health.ok) throw new Error('ไม่พบ Backend API กรุณาเปิดแอปผ่าน http://localhost:3000');
+    const h = await health.json();
+    if (!h.geminiConfigured) throw new Error('ยังไม่ได้ตั้งค่า GEMINI_API_KEY ในไฟล์ .env ของ Backend');
+    const durationMatch = category.match(/(3|5|7|10)/);
+    const duration = durationMatch ? Number(durationMatch[1]) : 5;
+    const response = await fetch('/api/generate-script', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({topic,category,tone,audience,duration}) });
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.error || 'Gemini API ไม่สามารถสร้างบทได้');
+    currentProjectData.topic = topic;
+    currentProjectData.category = category;
+    currentProjectData.tone = tone;
+    currentProjectData.scripture.text = data.scripture?.reference ? `ข้อพระคัมภีร์อ้างอิง: ${data.scripture.reference} — โปรดตรวจสอบข้อความจริงก่อนเผยแพร่` : 'ยังไม่ได้ระบุข้อพระคัมภีร์';
+    currentProjectData.scripture.ref = data.scripture?.reference || 'โปรดตรวจสอบพระคัมภีร์';
+    currentProjectData.scenes = data.scenes.map((sc,i)=>({...sc,sceneNum:sc.sceneNum||i+1,timecode:sc.timecode||'',narration:sc.narration||sc.dialogue||'',prompt:sc.prompt||''}));
+    window.granaryGeneratedFilm = data;
+    const titleNode = document.getElementById('scripture-main-text');
+    if(titleNode) titleNode.innerText = `${data.title || topic}\
+${data.logline || ''}`;
+    const refNode = document.getElementById('scripture-ref');
+    if(refNode) refNode.innerText = `— ${data.scripture?.reference || 'รอตรวจสอบข้อพระคัมภีร์'}`;
+    renderScenesList(currentProjectData.scenes);
+    renderAudioList(currentProjectData.scenes);
+    renderVisualPrompts(currentProjectData.scenes);
+    closeModalAlert();
+    goToStep(2);
+    if (typeof showToast === 'function') showToast('สร้างบทด้วย Gemini สำเร็จ');
+  } catch (error) {
+    closeModalAlert();
+    showModalAlert('สร้างบทไม่สำเร็จ', error.message);
+    console.error(error);
+  }
+}
+</script>
+
+</body>
+</html>
